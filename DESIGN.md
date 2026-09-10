@@ -112,6 +112,40 @@ A clean, modern sans-serif display pairing that communicates educational credibi
 * **Album Grid:** Masonry / Bento asymmetric collage showcasing student activities, workshops, lab facilities, and academic ceremonies.
 * **Lightbox Modal:** Dark immersive backdrop (`bg-slate-950/90 backdrop-blur-md`), zero-clutter image viewer with smooth zoom and keyboard navigation (`←`, `→`, `Esc`).
 
+### 5.7 Faculty & Leadership Directory (Pengurus & GTK)
+* **Card Anatomy:**
+  1. Aspect ratio portrait container (`aspect-[3/4]`, `rounded-2xl`, `overflow-hidden`, `bg-slate-100`) with crisp formal portrait photography.
+  2. Subtitle / Department Chip: Monospace or pill tag (`JetBrains Mono`, `text-xs text-blue-700 bg-blue-50/80 border border-blue-200/60`).
+  3. Formal Name: Bold display typography with academic degrees (`Plus Jakarta Sans`, `font-bold text-slate-900 text-base`).
+  4. Role & Assignment: Secondary slate caption (`text-xs text-slate-500 font-medium`, e.g. "Kepala Program Keahlian RPL").
+  5. Category Tabs: Clean filter switcher (`Semua`, `Pimpinan`, `Guru Produktif`, `Guru Normatif/Adaptif`, `Staf Tata Usaha`).
+
+### 5.8 Achievement & Award Cards (Prestasi)
+* **Design Philosophy:** Celebratory yet academically grounded. Uses Prestige Gold (`#E5B62A`) accents for medals and competition titles.
+* **Card Anatomy:**
+  1. Image Container (`aspect-[16/10]` or `aspect-[4/3]`): High-contrast photo of trophy presentation or certificate handover.
+  2. Prestige Rank Badge: Top-left floating badge (`bg-[#E5B62A]/15 text-[#92400E] border border-[#E5B62A]/40 font-bold px-3 py-1 rounded-full text-xs font-mono`, e.g. "Juara 1 Tingkat Nasional").
+  3. Competition Title: 2-line clamped bold headline (`text-slate-900 font-bold text-base hover:text-primary`).
+  4. Recipient Attribution: Monospace metadata with winner icon/label (`text-xs text-slate-600 font-mono`, e.g. "Tim RPL — Fikri & Zaki").
+  5. Year & Level Indicator: Bottom row with subtle divider showing competition year (`2026`) and level badge (`Provinsi / Nasional`).
+
+### 5.9 YouTube Video Showcase & Responsive Player
+* **Zero-Buffer Video Strategy:** Leverages YouTube iframe integration with custom branded wrapper.
+* **Video Card Anatomy:**
+  1. 16:9 Thumbnail Container (`aspect-video rounded-2xl overflow-hidden relative group cursor-pointer bg-slate-900`).
+  2. High-Res YouTube Poster (`hqdefault.jpg`) with subtle dark overlay gradient.
+  3. Tactile Play Button: Centered circular white/navy play pill (`w-14 h-14 rounded-full bg-white/95 text-[#103EA5] shadow-xl flex items-center justify-center group-hover:scale-110 transition-transform`).
+  4. Duration & Title Row: Monospace publication date and 2-line video title below the thumbnail.
+* **Interactive Player Modal:**
+  - Backdrop: Deep Midnight Slate (`bg-slate-950/90 backdrop-blur-md`).
+  - Container: 16:9 aspect ratio iframe wrapper (`max-w-4xl w-full mx-auto aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/10`).
+  - Controls: Top-right close button (`✕`) with Esc key listener.
+
+### 5.10 Floating WhatsApp Contact Pill
+* **Fixed Anchor:** Bottom-right corner (`fixed bottom-6 right-6 z-50`).
+* **Styling:** Emerald Brand Pill (`bg-[#25D366] hover:bg-[#20bd5a] text-white shadow-lg shadow-[#25D366]/30 px-5 py-3 rounded-full flex items-center gap-2.5 font-semibold text-sm transition-all hover:scale-105 active:scale-95`).
+* **Visual Elements:** WhatsApp SVG icon + text "Tanya PPDB / Info Sekolah" with subtle continuous notification ping dot.
+
 ---
 
 ## 6. Layout Principles & Grid Architecture
