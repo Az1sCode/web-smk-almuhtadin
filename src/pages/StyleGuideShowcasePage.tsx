@@ -76,18 +76,23 @@ export const StyleGuideShowcasePage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-canvas text-ink py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[100dvh] bg-canvas text-ink py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Header Navigation */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
           <div>
-            <Link 
-              to="/" 
-              className="inline-flex items-center gap-2 text-xs font-bold text-navy hover:text-azure bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200/60 mb-3 transition-all"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Kembali ke Beranda</span>
-            </Link>
+            <div className="flex items-center gap-2 mb-3">
+              <Link 
+                to="/" 
+                className="inline-flex items-center gap-2 text-xs font-bold text-navy hover:text-azure bg-azure-soft px-3 py-1.5 rounded-full border border-azure/20 transition-all"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Kembali ke Beranda</span>
+              </Link>
+              <span className="text-[10px] font-mono uppercase tracking-wider bg-amber-100 text-amber-800 font-bold px-2.5 py-1 rounded-full border border-amber-300">
+                Internal Developer Preview
+              </span>
+            </div>
             <h1 className="text-3xl font-extrabold text-navy tracking-tight">
               SMK Al-Muhtadin Design Tokens & Style Guide
             </h1>

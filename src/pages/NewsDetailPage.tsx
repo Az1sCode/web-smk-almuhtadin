@@ -11,6 +11,7 @@ import {
   ArrowUpRight 
 } from '@phosphor-icons/react';
 import { newsData } from '../data/mockData';
+import { formatIndonesianDate } from '../utils/formatters';
 
 export const NewsDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -72,7 +73,7 @@ export const NewsDetailPage: React.FC = () => {
           <div className="flex items-center gap-4 text-xs font-mono">
             <span className="flex items-center gap-1.5">
               <CalendarBlank size={16} />
-              {article.publishedAt}
+              {formatIndonesianDate(article.publishedAt)}
             </span>
             <span>•</span>
             <span className="flex items-center gap-1.5">
@@ -84,13 +85,18 @@ export const NewsDetailPage: React.FC = () => {
       </div>
 
       {/* Featured Cover Image */}
-      <div className="rounded-3xl overflow-hidden aspect-[16/9] shadow-lg border border-slate-200">
-        <img
-          src={article.featuredImage}
-          alt={article.title}
-          className="w-full h-full object-cover"
-        />
-      </div>
+      <figure className="space-y-2.5">
+        <div className="rounded-3xl overflow-hidden aspect-[16/9] shadow-lg border border-slate-200">
+          <img
+            src={article.featuredImage}
+            alt={article.title}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <figcaption className="text-center text-xs text-ink-muted italic font-mono">
+          Foto: {article.title} — Dokumentasi Resmi SMK Al-Muhtadin
+        </figcaption>
+      </figure>
 
       {/* Article Body */}
       <div 

@@ -14,6 +14,11 @@ export interface Major {
     title: string;
   };
   featuredImage: string;
+  facilities?: {
+    name: string;
+    description: string;
+    capacity?: string;
+  }[];
   stats: {
     studentsCount: number;
     labCount: number;
@@ -21,12 +26,14 @@ export interface Major {
   };
 }
 
+export type StaffCategory = 'pimpinan' | 'guru-produktif' | 'guru-normatif-adaptif' | 'staf-tu';
+
 export interface StaffMember {
   id: number;
   name: string;
   nipNuptk?: string;
   position: string;
-  category: 'pimpinan' | 'guru' | 'staf';
+  category: StaffCategory;
   department?: string;
   photo: string;
   email?: string;

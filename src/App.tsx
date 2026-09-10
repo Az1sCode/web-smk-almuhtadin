@@ -18,6 +18,7 @@ import { AchievementsPage } from './pages/AchievementsPage';
 import { GalleryPage } from './pages/GalleryPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { StyleGuideShowcasePage } from './pages/StyleGuideShowcasePage';
+import { AdminRouteGuard } from './components/AdminRouteGuard';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -56,7 +57,14 @@ export function App() {
           <Route path="/pengurus" element={<StaffPage />} />
           <Route path="/prestasi" element={<AchievementsPage />} />
           <Route path="/galeri" element={<GalleryPage />} />
-          <Route path="/admin" element={<AdminDashboardPage />} />
+          <Route 
+            path="/admin" 
+            element={
+              <AdminRouteGuard>
+                <AdminDashboardPage />
+              </AdminRouteGuard>
+            } 
+          />
         </Routes>
       </AppLayout>
     </BrowserRouter>

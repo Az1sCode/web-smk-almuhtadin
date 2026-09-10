@@ -7,11 +7,7 @@ import {
   Trophy, 
   CalendarBlank, 
   CaretRight, 
-  CheckCircle,
-  Briefcase,
-  Cpu,
-  GlobeHemisphereWest,
-  Calculator
+  CheckCircle 
 } from '@phosphor-icons/react';
 import { 
   schoolMetadata, 
@@ -21,6 +17,7 @@ import {
   newsData 
 } from '../data/mockData';
 import { VideoModal } from '../components/VideoModal';
+import { getMajorIcon } from '../utils/majorIcons';
 
 export const HomePage: React.FC = () => {
   const [selectedVideo, setSelectedVideo] = useState<{ id: string; title: string } | null>(null);
@@ -28,19 +25,6 @@ export const HomePage: React.FC = () => {
   const featuredAchievements = achievementsData.slice(0, 3);
   const latestNews = newsData.slice(0, 3);
   const heroVideo = videosData[0];
-
-  const getMajorIcon = (abbr: string) => {
-    switch (abbr) {
-      case 'RPL':
-        return <Cpu size={28} weight="duotone" className="text-azure" />;
-      case 'TKJ':
-        return <GlobeHemisphereWest size={28} weight="duotone" className="text-azure" />;
-      case 'AKL':
-        return <Calculator size={28} weight="duotone" className="text-azure" />;
-      default:
-        return <Briefcase size={28} weight="duotone" className="text-azure" />;
-    }
-  };
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-20">
@@ -243,7 +227,7 @@ export const HomePage: React.FC = () => {
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <div className="w-14 h-14 rounded-2xl bg-azure-soft flex items-center justify-center group-hover:scale-110 transition-transform">
-                    {getMajorIcon(major.abbreviation)}
+                    {getMajorIcon(major.abbreviation, "w-7 h-7 text-azure")}
                   </div>
                   <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-slate-100 text-ink-muted">
                     {major.abbreviation}

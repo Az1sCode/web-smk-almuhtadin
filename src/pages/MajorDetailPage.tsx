@@ -136,6 +136,33 @@ export const MajorDetailPage: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* Specific Lab Facilities */}
+          {major.facilities && major.facilities.length > 0 && (
+            <div className="bg-white rounded-3xl border border-slate-200/80 p-8 shadow-whisper space-y-4">
+              <h3 className="text-lg font-bold text-ink tracking-tight flex items-center gap-2">
+                <Flask size={22} className="text-navy" weight="duotone" />
+                <span>Fasilitas Laboratorium Praktik Kejuruan</span>
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {major.facilities.map((facility, fIdx) => (
+                  <div key={fIdx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-sm text-ink">{facility.name}</h4>
+                      {facility.capacity && (
+                        <span className="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-azure-soft text-azure">
+                          {facility.capacity}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-ink-muted leading-relaxed">
+                      {facility.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right 4 Cols: Head of Program & Fast Apply */}

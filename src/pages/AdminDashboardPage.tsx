@@ -47,7 +47,7 @@ export const AdminDashboardPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-canvas flex flex-col">
+    <div className="min-h-[100dvh] bg-canvas flex flex-col">
       {/* Top Admin Bar */}
       <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-30 shadow-sm">
         <div className="flex items-center gap-4">
@@ -397,7 +397,10 @@ export const AdminDashboardPage: React.FC = () => {
                       className="w-20 aspect-video rounded-lg object-cover"
                     />
                     <div>
-                      <p className="font-bold text-emerald-800">✅ Video ID Terdeteksi: {extractedId}</p>
+                      <p className="font-bold text-emerald-800 flex items-center gap-1.5">
+                        <CheckCircle size={16} weight="fill" className="text-emerald-600" />
+                        Video ID Terdeteksi: <code className="bg-emerald-100 px-1.5 py-0.5 rounded font-mono text-emerald-900">{extractedId}</code>
+                      </p>
                       <p className="text-[11px] text-emerald-600">Thumbnail otomatis diambil dari CDN resmi YouTube tanpa membebani disk VPS.</p>
                     </div>
                   </div>

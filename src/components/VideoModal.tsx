@@ -50,7 +50,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({ youtubeId, title, isOpen
         </div>
 
         {/* 16:9 Responsive Video Container */}
-        <div className="relative aspect-video w-full bg-black">
+        <div className="relative aspect-video w-full bg-[#0A1931]">
           <iframe
             className="w-full h-full"
             src={`https://www.youtube.com/embed/${youtubeId}?autoplay=1&rel=0`}

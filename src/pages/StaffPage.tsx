@@ -13,9 +13,10 @@ export const StaffPage: React.FC = () => {
 
   const categories = [
     { label: 'Semua', value: 'Semua' },
-    { label: 'Pimpinan Sekolah', value: 'pimpinan' },
-    { label: 'Tenaga Pendidik (Guru)', value: 'guru' },
-    { label: 'Tata Usaha & Staf', value: 'staf' },
+    { label: 'Pimpinan', value: 'pimpinan' },
+    { label: 'Guru Produktif', value: 'guru-produktif' },
+    { label: 'Guru Normatif / Adaptif', value: 'guru-normatif-adaptif' },
+    { label: 'Staf Tata Usaha', value: 'staf-tu' },
   ];
 
   const filteredStaff = staffData.filter((member) => {

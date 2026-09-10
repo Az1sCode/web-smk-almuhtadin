@@ -6,7 +6,8 @@ import {
   IdentificationCard, 
   MapPin, 
   CheckCircle, 
-  ArrowUpRight 
+  ArrowUpRight,
+  Buildings 
 } from '@phosphor-icons/react';
 import { schoolMetadata } from '../data/mockData';
 
@@ -74,11 +75,11 @@ export const ProfilePage: React.FC = () => {
 
         <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-whisper flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0">
-            <MapPin size={26} weight="duotone" />
+            <Buildings size={26} weight="duotone" />
           </div>
           <div>
-            <span className="text-xs font-mono text-ink-muted block">Wilayah Domisili</span>
-            <span className="text-base font-bold text-ink">Kota Depok, Jabar</span>
+            <span className="text-xs font-mono text-ink-muted block">Status Kepemilikan</span>
+            <span className="text-xs sm:text-sm font-bold text-ink">Swasta / Yayasan Al-Muhtadin</span>
           </div>
         </div>
       </div>
@@ -121,6 +122,19 @@ export const ProfilePage: React.FC = () => {
               <p>
                 Dengan kurikulum yang terhubung erat bersama mitra industri terkemuka serta didukung guru tersertifikasi BNSP, kami bangga dapat mengantarkan para lulusan kami langsung terserap kerja di perusahaan nasional maupun merintis usaha mandiri.
               </p>
+            </div>
+
+            {/* Digital Signature */}
+            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-mono uppercase tracking-wider text-ink-muted">Tanda Tangan Digital Resmi</p>
+                <p className="font-bold text-ink text-sm">{schoolMetadata.principal.name}</p>
+                <p className="text-2xs font-mono text-ink-muted">NIP. 196803151993031004</p>
+              </div>
+              <div className="px-3 py-1.5 border border-emerald-200 rounded-xl bg-emerald-50/50 flex items-center gap-2 self-start sm:self-auto">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-[10px] font-mono text-emerald-800 font-bold uppercase tracking-wider">Tervalidasi Digital</span>
+              </div>
             </div>
           </div>
         </div>

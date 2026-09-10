@@ -6,6 +6,7 @@ export const schoolMetadata = {
   npsn: "20214589",
   accreditation: "Akreditasi A (Unggul)",
   foundedYear: 1998,
+  ownershipStatus: "Swasta / Yayasan Pendidikan Al-Muhtadin",
   address: "Jl. Raya Al-Muhtadin No. 45, Pancoran Mas, Kota Depok, Jawa Barat 16436",
   phone: "(021) 7788-9900",
   whatsappNumber: "+62 812-3456-7890",
@@ -15,6 +16,7 @@ export const schoolMetadata = {
     name: "Drs. H. Ahmad Dahlan, M.Pd.",
     title: "Kepala Sekolah SMK Al-Muhtadin",
     photo: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=600",
+    signatureUrl: "https://api.dicebear.com/7.x/initials/svg?seed=AD&chars=1",
     quote: "Kami percaya bahwa pendidikan vokasi masa kini bukan sekadar transfer keterampilan teknis, melainkan pembentukan integritas, daya nalar kritis, dan kematangan karakter yang adaptif terhadap disrupsi global."
   },
   stats: [
@@ -59,6 +61,11 @@ export const majorsData: Major[] = [
       photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400"
     },
     featuredImage: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=1200",
+    facilities: [
+      { name: "Lab Software Engineering", description: "36 PC Core i7, 16GB RAM, dual display monitor, high-speed gigabit LAN", capacity: "36 Siswa" },
+      { name: "Lab IoT & Mobile Computing", description: "Development board Arduino, ESP32, Raspberry Pi 4 kit, iMac workstation", capacity: "32 Siswa" },
+      { name: "Creative Studio & UI/UX Lab", description: "Graphic tablet Wacom, ergonomic pod, smart projector interactive", capacity: "30 Siswa" }
+    ],
     stats: {
       studentsCount: 420,
       labCount: 3,
@@ -98,6 +105,11 @@ export const majorsData: Major[] = [
       photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400"
     },
     featuredImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=1200",
+    facilities: [
+      { name: "Lab Cisco & Mikrotik Academy", description: "Mikrotik RouterBoard RB750/RB951, Cisco Catalyst Switch, patch panel rack 42U", capacity: "36 Siswa" },
+      { name: "Lab Fiber Optic & Splicing", description: "Optical Fusion Splicer Fujikura, OTDR Anritsu, stripper, cleaver & test kit", capacity: "30 Siswa" },
+      { name: "Lab Server Enterprise & Cloud", description: "Rackmount server Dell PowerEdge, UPS online, isolated subnet environment", capacity: "32 Siswa" }
+    ],
     stats: {
       studentsCount: 450,
       labCount: 3,
@@ -137,6 +149,10 @@ export const majorsData: Major[] = [
       photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400"
     },
     featuredImage: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200",
+    facilities: [
+      { name: "Lab Mini Bank & FinTech", description: "Counter teller bank simulasi, mesin hitung uang, POS register terminal", capacity: "32 Siswa" },
+      { name: "Lab Komputer Akuntansi Digital", description: "36 PC dengan lisensi resmi Accurate Accounting 5 & MYOB Premier v19", capacity: "36 Siswa" }
+    ],
     stats: {
       studentsCount: 330,
       labCount: 2,
@@ -205,7 +221,7 @@ export const staffData: StaffMember[] = [
     id: 6,
     name: "Ir. Fauzan Ramadhan, M.Kom.",
     position: "Guru Produktif RPL / Kepala Program RPL",
-    category: "guru",
+    category: "guru-produktif",
     department: "Rekayasa Perangkat Lunak",
     photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=600",
     email: "fauzan.rpl@smkalmuhtadin.sch.id",
@@ -215,7 +231,7 @@ export const staffData: StaffMember[] = [
     id: 7,
     name: "Hendra Kusuma, S.T., M.T.",
     position: "Guru Produktif TKJ / Kepala Program TKJ",
-    category: "guru",
+    category: "guru-produktif",
     department: "Teknik Komputer & Jaringan",
     photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600",
     email: "hendra.tkj@smkalmuhtadin.sch.id",
@@ -225,7 +241,7 @@ export const staffData: StaffMember[] = [
     id: 8,
     name: "Dra. Siti Rahmawati, M.Ak.",
     position: "Guru Produktif AKL / Kepala Program AKL",
-    category: "guru",
+    category: "guru-produktif",
     department: "Akuntansi & Keuangan",
     photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600",
     email: "siti.akl@smkalmuhtadin.sch.id",
@@ -235,7 +251,7 @@ export const staffData: StaffMember[] = [
     id: 9,
     name: "Muhammad Rizky, S.Kom.",
     position: "Guru Produktif Mobile & Cloud Computing",
-    category: "guru",
+    category: "guru-produktif",
     department: "Rekayasa Perangkat Lunak",
     photo: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=600",
     orderIndex: 9
@@ -244,7 +260,7 @@ export const staffData: StaffMember[] = [
     id: 10,
     name: "Dimas Prasetyo, S.Kom.",
     position: "Guru Produktif Cyber Security & Server",
-    category: "guru",
+    category: "guru-produktif",
     department: "Teknik Komputer & Jaringan",
     photo: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?auto=format&fit=crop&q=80&w=600",
     orderIndex: 10
@@ -253,7 +269,7 @@ export const staffData: StaffMember[] = [
     id: 11,
     name: "Endang Purwanti, M.Pd.",
     position: "Guru Pengampu Bahasa Inggris & TOEIC",
-    category: "guru",
+    category: "guru-normatif-adaptif",
     department: "Normatif & Adaptif",
     photo: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600",
     orderIndex: 11
@@ -262,7 +278,7 @@ export const staffData: StaffMember[] = [
     id: 12,
     name: "Slamet Riyadi, A.Md.",
     position: "Kepala Bagian Tata Usaha (TU)",
-    category: "staf",
+    category: "staf-tu",
     department: "Administrasi & Kepegawaian",
     photo: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600",
     orderIndex: 12
@@ -271,7 +287,7 @@ export const staffData: StaffMember[] = [
     id: 13,
     name: "Arif Gunawan",
     position: "Kepala Laboran Komputer & Teknisi",
-    category: "staf",
+    category: "staf-tu",
     department: "Laboratorium & Jaringan",
     photo: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&q=80&w=600",
     orderIndex: 13

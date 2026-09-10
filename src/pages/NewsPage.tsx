@@ -5,15 +5,19 @@ import {
   CalendarBlank, 
   ArrowUpRight, 
   Clock, 
-  PushPin 
+  PushPin,
+  CaretLeft,
+  CaretRight
 } from '@phosphor-icons/react';
 import { newsData } from '../data/mockData';
+import { formatIndonesianDate } from '../utils/formatters';
 
 export const NewsPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
-  const categories = ['Semua', 'Pengumuman', 'Kegiatan', 'Prestasi'];
+  const categories = ['Semua', 'Pengumuman', 'Kegiatan', 'Prestasi', 'Artikel'];
 
   const filteredNews = newsData.filter((item) => {
     const matchesCategory =
@@ -23,6 +27,23 @@ export const NewsPage: React.FC = () => {
       item.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const ITEMS_PER_PAGE = 9;
+  const totalPages = Math.max(1, Math.ceil(filteredNews.length / ITEMS_PER_PAGE));
+  const paginatedNews = filteredNews.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(1);
+  };
+
+  const handleSearchChange = (q: string) => {
+    setSearchQuery(q);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-10">
@@ -46,7 +67,7 @@ export const NewsPage: React.FC = () => {
           {categories.map((category) => (
             <button
               key={category}
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => handleCategoryChange(category)}
               type="button"
               className={`px-4 py-2 rounded-full text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
                 selectedCategory === category
@@ -65,7 +86,7 @@ export const NewsPage: React.FC = () => {
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Cari judul berita..."
             className="w-full pl-10 pr-4 py-2.5 rounded-full bg-white border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure transition-all"
           />
@@ -73,70 +94,112 @@ export const NewsPage: React.FC = () => {
       </div>
 
       {/* News Grid */}
-      {filteredNews.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredNews.map((item) => (
-            <article
-              key={item.id}
-              className="group bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper hover:shadow-elevated transition-all flex flex-col justify-between hover:-translate-y-1 duration-300"
-            >
-              <div>
-                <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
-                  <img
-                    src={item.featuredImage}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
-                    <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-navy font-semibold text-xs shadow-sm">
-                      {item.category}
-                    </span>
-                    {item.isPinned && (
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gold text-slate-950 font-bold text-xs shadow-sm">
-                        <PushPin size={12} weight="fill" />
-                        <span>Sematkan</span>
+      {paginatedNews.length > 0 ? (
+        <div className="space-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {paginatedNews.map((item) => (
+              <article
+                key={item.id}
+                className="group bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper hover:shadow-elevated transition-all flex flex-col justify-between hover:-translate-y-1 duration-300"
+              >
+                <div>
+                  <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
+                    <img
+                      src={item.featuredImage}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute top-3.5 left-3.5 flex items-center gap-2">
+                      <span className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-navy font-semibold text-xs shadow-sm">
+                        {item.category}
                       </span>
-                    )}
+                      {item.isPinned && (
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gold text-slate-950 font-bold text-xs shadow-sm">
+                          <PushPin size={12} weight="fill" />
+                          <span>Sematkan</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-3">
+                    <div className="flex items-center gap-3 text-xs font-mono text-ink-muted">
+                      <span className="flex items-center gap-1">
+                        <CalendarBlank size={14} />
+                        {formatIndonesianDate(item.publishedAt)}
+                      </span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Clock size={14} />
+                        {item.readingTime}
+                      </span>
+                    </div>
+
+                    <h2 className="font-bold text-lg text-ink group-hover:text-navy transition-colors line-clamp-2 leading-snug">
+                      <Link to={`/berita/${item.slug}`}>{item.title}</Link>
+                    </h2>
+
+                    <p className="text-xs sm:text-sm text-ink-muted line-clamp-3 leading-relaxed">
+                      {item.excerpt}
+                    </p>
                   </div>
                 </div>
 
-                <div className="p-6 space-y-3">
-                  <div className="flex items-center gap-3 text-xs font-mono text-ink-muted">
-                    <span className="flex items-center gap-1">
-                      <CalendarBlank size={14} />
-                      {item.publishedAt}
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <Clock size={14} />
-                      {item.readingTime}
-                    </span>
-                  </div>
-
-                  <h2 className="font-bold text-lg text-ink group-hover:text-navy transition-colors line-clamp-2 leading-snug">
-                    <Link to={`/berita/${item.slug}`}>{item.title}</Link>
-                  </h2>
-
-                  <p className="text-xs sm:text-sm text-ink-muted line-clamp-3 leading-relaxed">
-                    {item.excerpt}
-                  </p>
+                <div className="px-6 pb-6 pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span className="text-xs font-mono text-ink-muted">
+                    {item.viewsCount} kali dibaca
+                  </span>
+                  <Link
+                    to={`/berita/${item.slug}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-navy hover:text-azure transition-colors"
+                  >
+                    <span>Baca Artikel</span>
+                    <ArrowUpRight size={14} weight="bold" />
+                  </Link>
                 </div>
-              </div>
+              </article>
+            ))}
+          </div>
 
-              <div className="px-6 pb-6 pt-2 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-xs font-mono text-ink-muted">
-                  {item.viewsCount} kali dibaca
-                </span>
-                <Link
-                  to={`/berita/${item.slug}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-navy hover:text-azure transition-colors"
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 pt-6">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2.5 rounded-full border border-slate-200 bg-white text-navy disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                aria-label="Halaman Sebelumnya"
+              >
+                <CaretLeft size={16} weight="bold" />
+              </button>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+                <button
+                  key={pageNumber}
+                  type="button"
+                  onClick={() => setCurrentPage(pageNumber)}
+                  className={`w-10 h-10 rounded-full text-xs font-mono font-bold transition-all ${
+                    currentPage === pageNumber
+                      ? 'bg-navy text-white shadow-sm'
+                      : 'bg-white text-ink-muted border border-slate-200 hover:text-navy hover:bg-slate-50'
+                  }`}
                 >
-                  <span>Baca Artikel</span>
-                  <ArrowUpRight size={14} weight="bold" />
-                </Link>
-              </div>
-            </article>
-          ))}
+                  {pageNumber}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2.5 rounded-full border border-slate-200 bg-white text-navy disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                aria-label="Halaman Berikutnya"
+              >
+                <CaretRight size={16} weight="bold" />
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8">

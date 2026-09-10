@@ -5,27 +5,12 @@ import {
   CheckCircle, 
   Users, 
   ChalkboardTeacher, 
-  Buildings, 
-  Briefcase,
-  Cpu,
-  GlobeHemisphereWest,
-  Calculator
+  Buildings 
 } from '@phosphor-icons/react';
 import { majorsData, schoolMetadata } from '../data/mockData';
+import { getMajorIcon } from '../utils/majorIcons';
 
 export const MajorsPage: React.FC = () => {
-  const getMajorIcon = (abbr: string) => {
-    switch (abbr) {
-      case 'RPL':
-        return <Cpu size={32} weight="duotone" className="text-azure" />;
-      case 'TKJ':
-        return <GlobeHemisphereWest size={32} weight="duotone" className="text-azure" />;
-      case 'AKL':
-        return <Calculator size={32} weight="duotone" className="text-azure" />;
-      default:
-        return <Briefcase size={32} weight="duotone" className="text-azure" />;
-    }
-  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-16">

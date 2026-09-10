@@ -169,7 +169,7 @@ export const GalleryPage: React.FC = () => {
 
                   {/* Duration Badge */}
                   <div className="absolute bottom-3 right-3">
-                    <span className="px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md text-white font-mono text-xs">
+                    <span className="px-2.5 py-1 rounded-md bg-ink/80 backdrop-blur-md text-white font-mono text-xs">
                       {video.duration}
                     </span>
                   </div>
