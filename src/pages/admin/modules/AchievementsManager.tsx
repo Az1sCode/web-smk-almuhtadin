@@ -344,7 +344,7 @@ export const AchievementsManager: React.FC = () => {
                   <label className="block text-xs font-bold text-ink mb-1">Tingkat</label>
                   <select
                     value={level}
-                    onChange={(e) => setLevel(e.target.value as any)}
+                    onChange={(e) => setLevel(e.target.value as Achievement['level'])}
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
                   >
                     <option value="kecamatan">Kecamatan</option>
