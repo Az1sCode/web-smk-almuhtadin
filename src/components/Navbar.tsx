@@ -9,7 +9,8 @@ import {
   CaretDown,
   Buildings,
   Briefcase,
-  UsersThree
+  UsersThree,
+  Target
 } from '@phosphor-icons/react';
 import { schoolMetadata } from '../data/mockData';
 
@@ -26,6 +27,12 @@ export const Navbar: React.FC = () => {
       path: '/profil', 
       desc: 'Profil, sejarah & fasilitas',
       icon: Buildings 
+    },
+    { 
+      name: 'Visi & Misi', 
+      path: '/visi-misi', 
+      desc: 'Komitmen, cita-cita & nilai institusi',
+      icon: Target 
     },
     { 
       name: 'Jurusan', 

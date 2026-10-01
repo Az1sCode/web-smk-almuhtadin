@@ -207,6 +207,28 @@ export const ProfilePage: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Visi & Misi Crosslink Banner */}
+      <div className="bg-gradient-to-r from-navy via-navy to-navy-dark rounded-3xl p-8 sm:p-10 text-white shadow-elevated flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-navy/20">
+        <div className="space-y-2 max-w-xl">
+          <span className="text-xs font-mono uppercase tracking-widest text-gold font-bold">
+            Komitmen Institusi
+          </span>
+          <h3 className="text-xl sm:text-2xl font-bold tracking-tight">
+            Visi, Misi & Nilai Inti SMK Al-Muhtadin
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-light">
+            Pelajari pedoman fundamental, 5 misi strategis pendidikan vokasi, serta 4 pilar karakter moral islami yang membimbing seluruh proses pembinaan siswa di halaman khusus Visi & Misi.
+          </p>
+        </div>
+        <Link
+          to="/visi-misi"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gold hover:bg-gold-hover text-slate-950 font-bold text-sm tracking-tight shadow-md transition-all transform hover:-translate-y-0.5 active:scale-95 shrink-0 self-start sm:self-auto"
+        >
+          <span>Lihat Visi & Misi Lengkap</span>
+          <ArrowUpRight size={16} weight="bold" />
+        </Link>
+      </div>
     </div>
   );
 };

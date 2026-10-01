@@ -1,8 +1,8 @@
 # Product Requirements Document (PRD)
 # SMK Al-Muhtadin — Official School Website
 
-**Version**: 2.0  
-**Date**: September 9, 2026  
+**Version**: 2.1 (MySQL Migration)  
+**Date**: September 29, 2026  
 **Status**: ✅ Approved — Ready for Development  
 **Prepared by**: Antigravity AI  
 
@@ -17,7 +17,7 @@ SMK Al-Muhtadin membutuhkan kehadiran digital resmi yang terpusat dan dinamis. S
 Membangun portal website sekolah modern, cepat, dan dinamis yang bertindak sebagai *single source of truth* untuk seluruh informasi SMK Al-Muhtadin.
 Sistem terdiri dari:
 1. **Public Frontend (React Vite + Tailwind CSS + shadcn/ui)**: Antarmuka publik yang responsif, berestetika akademis premium (*Academic Sanctuary Editorial Bento*), aksesibilitas tinggi, dan optimal untuk berbagi tautan di media sosial (WhatsApp & Facebook Open Graph preview).
-2. **Backend & REST API (Laravel 11 + PostgreSQL 16)**: Layanan API berkinerja tinggi, aman, dan modular dengan sistem manajemen konten (CMS) berbasis peran (*Role-Based Access Control*) untuk staf sekolah non-teknis.
+2. **Backend & REST API (Laravel 11 + MySQL 8.x)**: Layanan API berkinerja tinggi, aman, dan modular dengan sistem manajemen konten (CMS) berbasis peran (*Role-Based Access Control*) untuk staf sekolah non-teknis.
 3. **Integrasi Media Khusus**:
    - **Galeri Foto**: Pengelompokan album kegiatan dengan optimasi kompresi otomatis WebP.
    - **Galeri Video YouTube**: Mengintegrasikan kanal YouTube resmi sekolah menggunakan parser ID video otomatis dan pemutar modal interaktif, menjaga efisiensi bandwidth dan kapasitas penyimpanan server VPS sekolah.
@@ -233,7 +233,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
                     ▼                                              ▼
 ┌──────────────────────────────────────┐       ┌───────────────────────────────────┐
 │           DATABASE LAYER             │       │         EXTERNAL SERVICES         │
-│            PostgreSQL 16             │       │                                   │
+│              MySQL 8.x               │       │                                   │
 │  users, staff_members, news,         │       │  • YouTube API / oEmbed           │
 │  categories, achievements, videos,   │       │  • WhatsApp Click-to-Chat API     │
 │  majors, albums, gallery_images      │       │  • Local Storage (Storage Link)   │
@@ -251,7 +251,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 | **Font Institusi** | Plus Jakarta Sans & JetBrains Mono | Google Fonts | Sans-serif profesional berkarakter dan monospaced untuk kode/NPSN/angka. |
 | **Backend Framework** | Laravel | 11.x | Robust RESTful API, arsitektur MVC rapi, validasi data kuat, ekosistem Eloquent terbaik. |
 | **Authentication** | Laravel Sanctum | Built-in | Keamanan autentikasi SPA dengan HTTP-only cookies / Bearer token. |
-| **Database** | PostgreSQL | 16.x | RDBMS enterprise, handal, performa query relasional dan indexing teks tinggi. |
+| **Database** | MySQL | 8.x | RDBMS terpopuler, andal, performa tinggi, dan kompatibilitas standar hosting/VPS PHP & Laravel. |
 | **Media Processing** | Intervention Image | v3.x | Konversi otomatis gambar unggahan ke format WebP terkompresi. |
 | **Video Integration** | YouTube Embed Player | Iframe API | Zero VPS storage cost, streaming lancar di semua perangkat. |
 | **Rich Text Editor** | TipTap | v2.x | Headless WYSIWYG editor modern, output HTML bersih untuk artikel berita. |
@@ -259,12 +259,12 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 
 ---
 
-### 3.3 Database Schema (PostgreSQL 16)
+### 3.3 Database Schema (MySQL 8.x)
 
 #### 1. `users` (Admin & Editor)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas unik user |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas unik user |
 | `name` | VARCHAR(255) | NOT NULL | Nama staf admin |
 | `email` | VARCHAR(255) | UNIQUE, NOT NULL | Alamat email login |
 | `password` | VARCHAR(255) | NOT NULL | Hash Bcrypt (cost factor ≥ 12) |
@@ -276,7 +276,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 2. `categories` (Kategori Berita)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas kategori |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas kategori |
 | `name` | VARCHAR(100) | NOT NULL | Nama kategori (contoh: "Pengumuman", "Kegiatan") |
 | `slug` | VARCHAR(100) | UNIQUE, NOT NULL | URL slug ramah SEO |
 | `created_at` | TIMESTAMP | | Waktu pembuatan |
@@ -284,7 +284,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 3. `news` (Berita & Artikel)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas artikel |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas artikel |
 | `title` | VARCHAR(255) | NOT NULL | Judul berita |
 | `slug` | VARCHAR(255) | UNIQUE, NOT NULL | URL slug artikel |
 | `excerpt` | VARCHAR(300) | NOT NULL | Ringkasan teks pendek (maks 300 kar) |
@@ -293,8 +293,8 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 | `status` | VARCHAR(50) | DEFAULT 'draft' | `draft`, `published` |
 | `is_pinned` | BOOLEAN | DEFAULT FALSE | Apakah disematkan di beranda |
 | `views_count` | INT | DEFAULT 0 | Jumlah pembaca artikel |
-| `category_id` | BIGINT | FK → `categories.id` | Relasi kategori berita |
-| `author_id` | BIGINT | FK → `users.id` | Relasi penulis/admin pengunggah |
+| `category_id` | BIGINT UNSIGNED | FK → `categories.id` | Relasi kategori berita |
+| `author_id` | BIGINT UNSIGNED | FK → `users.id` | Relasi penulis/admin pengunggah |
 | `published_at` | TIMESTAMP | NULLABLE | Waktu rilis publikasi |
 | `created_at` | TIMESTAMP | | Waktu pembuatan |
 | `updated_at` | TIMESTAMP | | Waktu pembaruan |
@@ -302,14 +302,14 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 4. `majors` (Program Keahlian / Jurusan SMK)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas jurusan |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas jurusan |
 | `name` | VARCHAR(255) | NOT NULL | Nama jurusan (contoh: "Rekayasa Perangkat Lunak") |
 | `abbreviation` | VARCHAR(50) | NOT NULL | Singkatan (contoh: "RPL", "TKJ") |
 | `slug` | VARCHAR(100) | UNIQUE, NOT NULL | Slug URL jurusan |
 | `short_description` | VARCHAR(500) | NOT NULL | Penjelasan ringkas untuk kartu bento |
 | `full_description` | TEXT | NOT NULL | Deskripsi lengkap, kurikulum, fasilitas |
-| `career_prospects` | JSONB | NULLABLE | Array daftar prospek kerja lulusan |
-| `industry_partners` | JSONB | NULLABLE | Array nama/logo mitra industri DUDI |
+| `career_prospects` | JSON | NULLABLE | Array daftar prospek kerja lulusan |
+| `industry_partners` | JSON | NULLABLE | Array nama/logo mitra industri DUDI |
 | `featured_image` | VARCHAR(500) | NOT NULL | Foto kegiatan lab/jurusan |
 | `order_index` | INT | DEFAULT 0 | Urutan tampilan di beranda/halaman |
 | `is_active` | BOOLEAN | DEFAULT TRUE | Status ketersediaan jurusan |
@@ -319,12 +319,12 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 5. `staff_members` (Pengurus, Guru & Tenaga Kependidikan)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas staf/guru |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas staf/guru |
 | `name` | VARCHAR(255) | NOT NULL | Nama lengkap beserta gelar (contoh: "Drs. H. Ahmad Dahlan, M.Pd.") |
 | `nip_nuptk` | VARCHAR(50) | NULLABLE | Nomor identitas resmi guru (opsional) |
 | `position` | VARCHAR(255) | NOT NULL | Jabatan / Mata Pelajaran (contoh: "Kepala Sekolah", "Guru Produktif RPL") |
 | `category` | VARCHAR(50) | NOT NULL | `pimpinan`, `guru`, `staf` |
-| `major_id` | BIGINT | FK → `majors.id` (NULLABLE) | Relasi jika guru kejuruan tertentu |
+| `major_id` | BIGINT UNSIGNED | FK → `majors.id` (NULLABLE) | Relasi jika guru kejuruan tertentu |
 | `photo` | VARCHAR(500) | NULLABLE | Lokasi file foto formal portrait |
 | `email` | VARCHAR(255) | NULLABLE | Email resmi (opsional) |
 | `order_index` | INT | DEFAULT 0 | Urutan penomoran untuk sorting pimpinan/staf |
@@ -335,7 +335,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 6. `achievements` (Prestasi Siswa, Guru & Sekolah)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas prestasi |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas prestasi |
 | `title` | VARCHAR(255) | NOT NULL | Nama capaian (contoh: "Juara 1 LKS Web Technologies 2026") |
 | `recipient_name` | VARCHAR(255) | NOT NULL | Nama siswa/tim/guru peraih prestasi |
 | `recipient_type` | VARCHAR(50) | DEFAULT 'siswa' | `siswa`, `guru`, `sekolah` |
@@ -352,7 +352,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 7. `videos` (Galeri Video YouTube)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas video |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas video |
 | `title` | VARCHAR(255) | NOT NULL | Judul video kegiatan |
 | `youtube_url` | VARCHAR(500) | NOT NULL | URL asli yang dimasukkan admin |
 | `youtube_id` | VARCHAR(50) | NOT NULL | ID 11-karakter video YouTube (otomatis diekstrak) |
@@ -368,7 +368,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 8. `albums` (Album Galeri Foto)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas album |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas album |
 | `name` | VARCHAR(255) | NOT NULL | Nama album (contoh: "PPDB & MPLS 2026") |
 | `slug` | VARCHAR(255) | UNIQUE, NOT NULL | Slug URL album |
 | `description` | TEXT | NULLABLE | Deskripsi album foto |
@@ -379,8 +379,8 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 9. `gallery_images` (Foto di Dalam Album)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas gambar |
-| `album_id` | BIGINT | FK → `albums.id` (CASCADE) | Relasi ke album |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas gambar |
+| `album_id` | BIGINT UNSIGNED | FK → `albums.id` (CASCADE) | Relasi ke album |
 | `image_path` | VARCHAR(500) | NOT NULL | Lokasi file foto WebP |
 | `caption` | VARCHAR(255) | NULLABLE | Keterangan foto |
 | `order_index` | INT | DEFAULT 0 | Urutan foto dalam album |
@@ -389,17 +389,17 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 #### 10. `pages` (Konten Halaman Statis)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas halaman |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas halaman |
 | `key` | VARCHAR(100) | UNIQUE, NOT NULL | Kunci unik (`profile`, `vision_mission`, `history`, `facilities`) |
 | `title` | VARCHAR(255) | NOT NULL | Judul bagian |
-| `content` | JSONB | NOT NULL | Payload terstruktur (HTML/JSON konten) |
-| `updated_by` | BIGINT | FK → `users.id` | User terakhir yang mengedit |
+| `content` | JSON | NOT NULL | Payload terstruktur (HTML/JSON konten) |
+| `updated_by` | BIGINT UNSIGNED | FK → `users.id` | User terakhir yang mengedit |
 | `updated_at` | TIMESTAMP | | Waktu pembaruan |
 
 #### 11. `settings` (Konfigurasi Global Website)
 | Column | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | BIGSERIAL | PK | Identitas setting |
+| `id` | BIGINT UNSIGNED AUTO_INCREMENT | PK | Identitas setting |
 | `key` | VARCHAR(100) | UNIQUE, NOT NULL | Misal: `school_phone`, `whatsapp_number`, `school_email`, `address`, `npsn`, `social_links` |
 | `value` | TEXT | NOT NULL | Nilai pengaturan |
 | `updated_at` | TIMESTAMP | | Waktu pembaruan |
@@ -494,7 +494,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 ### 4.2 Phased Roadmap
 
 #### 🚀 MVP (Bulan 1) — Portal Informasi Dinamis Lengkap
-- [ ] **Setup & Infrastruktur**: Setup project React (Vite) + Tailwind + shadcn/ui dan Laravel 11 API + PostgreSQL 16.
+- [ ] **Setup & Infrastruktur**: Setup project React (Vite) + Tailwind + shadcn/ui dan Laravel 11 API + MySQL 8.x.
 - [ ] **Sistem Autentikasi & CMS**: Login aman, proteksi rute, dasbor ringkasan staf admin.
 - [ ] **Modul Berita**: CRUD berita, kategori, rich-text TipTap, halaman list, halaman detail, WhatsApp share card.
 - [ ] **Modul Pengurus & GTK**: CRUD data staf, kategori pimpinan/guru/staf, foto formal, halaman direktori pengurus.
@@ -523,7 +523,7 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 
 | # | Parameter | Keputusan Final |
 |---|---|---|
-| 1 | **Server & Infrastruktur** | VPS sekolah yang sudah ada (Ubuntu 22.04 LTS, Nginx, PHP 8.3 FPM, PostgreSQL 16). |
+| 1 | **Server & Infrastruktur** | VPS sekolah yang sudah ada (Ubuntu 22.04 LTS, Nginx, PHP 8.3 FPM, MySQL 8.x). |
 | 2 | **Penyimpanan Video** | **100% YouTube Embed**. Server VPS tidak melayani streaming file video langsung. |
 | 3 | **Penyimpanan Gambar** | Local Disk VPS terproteksi di folder `storage/app/public` dengan konversi otomatis ke WebP. |
 | 4 | **Peran Pengurus** | Dibagi menjadi 3 kategori: *Pimpinan Sekolah*, *Guru*, dan *Tenaga Kependidikan (Staf TU)*. |
@@ -532,4 +532,4 @@ Fitur berikut secara eksplisit **dikeluarkan dari lingkup MVP** demi menjamin pe
 
 ---
 
-*Dokumen PRD Versi 2.0 ini telah disetujui dan menjadi acuan utama pengembangan teknis rekayasa perangkat lunak.*
+*Dokumen PRD Versi 2.1 ini telah disetujui dan menjadi acuan utama pengembangan teknis rekayasa perangkat lunak.*

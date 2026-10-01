@@ -23,7 +23,7 @@ export const MajorsPage: React.FC = () => {
           Program Keahlian Unggulan
         </h1>
         <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
-          Tiga jurusan vokasi masa depan yang terintegrasi dengan kebutuhan industri riil, didukung laboratorium berteknologi tinggi dan sertifikasi profesi.
+          Empat program keahlian vokasi masa depan yang terintegrasi dengan kebutuhan industri riil, didukung laboratorium berteknologi tinggi dan sertifikasi profesi.
         </p>
       </div>
 

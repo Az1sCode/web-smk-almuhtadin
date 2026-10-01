@@ -1,4 +1,15 @@
-import { Major, StaffMember, Achievement, VideoItem, NewsItem, Album, GalleryImage } from '../types';
+import { 
+  Major, 
+  StaffMember, 
+  Achievement, 
+  VideoItem, 
+  NewsItem, 
+  Album, 
+  GalleryImage, 
+  HeroSlide,
+  SchoolAdvantage,
+  SchoolVisionMissionData
+} from '../types';
 
 export const schoolMetadata = {
   name: "SMK Al-Muhtadin",
@@ -20,143 +31,215 @@ export const schoolMetadata = {
     quote: "Kami percaya bahwa pendidikan vokasi masa kini bukan sekadar transfer keterampilan teknis, melainkan pembentukan integritas, daya nalar kritis, dan kematangan karakter yang adaptif terhadap disrupsi global."
   },
   stats: [
-    { label: "Program Keahlian", value: "3", note: "Terakreditasi A" },
+    { label: "Program Keahlian", value: "4", note: "Terakreditasi A" },
     { label: "Siswa Aktif", value: "1,200+", note: "Tiga Angkatan" },
     { label: "Guru Tersertifikasi", value: "100%", note: "Kompetensi BNSP" },
     { label: "Mitra Industri (DUDI)", value: "38+", note: "MoU Resmi Aktif" },
   ]
 };
 
-export const majorsData: Major[] = [
+export const heroSlidesData: HeroSlide[] = [
   {
     id: 1,
-    name: "Rekayasa Perangkat Lunak",
-    abbreviation: "RPL",
-    slug: "rekayasa-perangkat-lunak",
-    shortDescription: "Mempelajari rancang bangun perangkat lunak modern, pengembangan web, aplikasi mobile, cloud system, dan kecerdasan buatan.",
-    fullDescription: "Program Keahlian Rekayasa Perangkat Lunak (RPL) membekali peserta didik dengan kompetensi komprehensif di bidang rekayasa piranti lunak, algoritma pemrograman, database enterprise, hingga penerapan arsitektur modern web dan mobile. Kurikulum diselaraskan langsung dengan standar kebutuhan industri digital masa kini.",
-    competencies: [
-      "Front-End Engineering (React, Tailwind, Next.js)",
-      "Back-End Architecture (Node.js, Laravel, REST & GraphQL API)",
-      "Mobile App Development (Flutter & React Native)",
-      "Database Modeling & Cloud Computing (PostgreSQL, Supabase, Docker)",
-      "UI/UX Design Systems & Product Development"
-    ],
-    careerProspects: [
-      "Fullstack Web Developer",
-      "Mobile Application Specialist",
-      "Frontend UI/UX Engineer",
-      "Software Quality Assurance (QA) Tester",
-      "Junior Database Administrator"
-    ],
-    industryPartners: [
-      { name: "PT Telkom Indonesia" },
-      { name: "Dicoding Indonesia" },
-      { name: "Tokopedia Tech Academy" },
-      { name: "PT Astra Graphia Information Technology" }
-    ],
-    headOfProgram: {
-      name: "Ir. Fauzan Ramadhan, M.Kom.",
-      title: "Kepala Program Keahlian RPL",
-      photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400"
-    },
-    featuredImage: "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=1200",
-    facilities: [
-      { name: "Lab Software Engineering", description: "36 PC Core i7, 16GB RAM, dual display monitor, high-speed gigabit LAN", capacity: "36 Siswa" },
-      { name: "Lab IoT & Mobile Computing", description: "Development board Arduino, ESP32, Raspberry Pi 4 kit, iMac workstation", capacity: "32 Siswa" },
-      { name: "Creative Studio & UI/UX Lab", description: "Graphic tablet Wacom, ergonomic pod, smart projector interactive", capacity: "30 Siswa" }
-    ],
-    stats: {
-      studentsCount: 420,
-      labCount: 3,
-      employmentRate: "94.2% Terserap Kerja / Wirausaha"
-    }
+    badge: "SMK Al-Muhtadin • Terakreditasi A (Unggul)",
+    headline: "Membentuk Generasi Unggul, Berkarakter & Siap Kerja.",
+    description: "Pusat keunggulan vokasi di Kota Depok yang mengintegrasikan kurikulum berbasis industri teknologi terkini, kepemimpinan, dan nilai budi pekerti luhur.",
+    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1600",
+    imageAlt: "Gedung dan Lingkungan Kampus SMK Al-Muhtadin"
   },
   {
     id: 2,
-    name: "Teknik Komputer & Jaringan",
-    abbreviation: "TKJ",
-    slug: "teknik-komputer-dan-jaringan",
-    shortDescription: "Fokus pada instalasi infrastruktur jaringan komputer, fiber optik, administrasi server Linux/Windows, mikrotik, dan cyber security.",
-    fullDescription: "Kompetensi Keahlian Teknik Komputer dan Jaringan (TKJ) menyiapkan tenaga profesional muda yang handal dalam merancang, mengkonfigurasi, dan mengamankan jaringan komputer skala enterprise, infrastruktur fiber optik, virtualization, serta pemeliharaan hardware dan server.",
+    badge: "Pusat Keunggulan Teknologi & Vokasi",
+    headline: "Kurikulum Selaras Kebutuhan Nyata Dunia Industri.",
+    description: "Bekerja sama erat dengan 38+ mitra industri terkemuka untuk memastikan setiap peserta didik memiliki sertifikasi kompetensi standar nasional dan internasional.",
+    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=1600",
+    imageAlt: "Praktik Laboratorium Komputer dan Kejuruan Berstandar Industri"
+  },
+  {
+    id: 3,
+    badge: "Penerimaan Peserta Didik Baru (PPDB)",
+    headline: "Wujudkan Cita-Cita & Masa Depan Sukses Bersama Kami.",
+    description: "Fasilitas laboratorium modern, pembelajaran berbasis proyek riil terpadu, serta pembinaan akhlak mulia dan kedisiplinan kerja tinggi.",
+    image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1600",
+    imageAlt: "Aktivitas Siswa Berprestasi SMK Al-Muhtadin"
+  }
+];
+
+export const majorsData: Major[] = [
+  {
+    id: 1,
+    name: "Teknik Jaringan Komputer & Telekomunikasi",
+    abbreviation: "TJKT",
+    slug: "teknik-jaringan-komputer-dan-telekomunikasi",
+    shortDescription: "Fokus pada perancangan infrastruktur jaringan komputer, fiber optik, administrasi server Linux/Windows, mikrotik, cisco, dan cyber security.",
+    fullDescription: "Program Keahlian Teknik Jaringan Komputer dan Telekomunikasi (TJKT) menyiapkan tenaga ahli muda yang terampil dalam merancang, mengonfigurasi, dan mengamankan jaringan enterprise, infrastruktur serat optik, cloud virtualization, serta sistem telekomunikasi digital modern.",
     competencies: [
-      "Perancangan Arsitektur Jaringan LAN, WAN & Fiber Optic",
-      "Sertifikasi Mikrotik MTCNA & Cisco CCNA Essentials",
-      "Administrasi Server Enterprise (Linux Debian/Ubuntu Server)",
-      "Network Security & Penetration Testing Dasar",
-      "Virtualization & Cloud Infrastructure Management"
+      "Perancangan Jaringan LAN, WAN, Wireless & Fiber Optik",
+      "Sertifikasi Mikrotik MTCNA & Cisco Networking Academy",
+      "Administrasi Server Enterprise (Linux & Windows Server)",
+      "Network Security & Cyber Defense Dasar",
+      "Cloud Infrastructure & Virtualization Staging"
     ],
     careerProspects: [
-      "Network Support Engineer",
-      "System & Cloud Administrator",
-      "Fiber Optic Specialist",
-      "Cybersecurity Analyst Junior",
-      "IT Infrastructure Support"
+      "Network Support Specialist",
+      "Cloud & System Administrator",
+      "Fiber Optic Technician",
+      "Cybersecurity Support Analyst",
+      "IT Infrastructure Engineer"
     ],
     industryPartners: [
-      { name: "PT Telkom Akses" },
+      { name: "PT Telkom Indonesia" },
       { name: "Biznet Networks" },
       { name: "ID-Networkers" },
-      { name: "PT Cyberindo Aditama (CBN)" }
+      { name: "PT Telkom Akses" }
     ],
     headOfProgram: {
       name: "Hendra Kusuma, S.T., M.T.",
-      title: "Kepala Program Keahlian TKJ",
+      title: "Kepala Program Keahlian TJKT",
       photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400"
     },
     featuredImage: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=1200",
     facilities: [
       { name: "Lab Cisco & Mikrotik Academy", description: "Mikrotik RouterBoard RB750/RB951, Cisco Catalyst Switch, patch panel rack 42U", capacity: "36 Siswa" },
-      { name: "Lab Fiber Optic & Splicing", description: "Optical Fusion Splicer Fujikura, OTDR Anritsu, stripper, cleaver & test kit", capacity: "30 Siswa" },
+      { name: "Lab Fiber Optik & Splicing", description: "Optical Fusion Splicer Fujikura, OTDR Anritsu, stripper, cleaver & test kit", capacity: "32 Siswa" },
       { name: "Lab Server Enterprise & Cloud", description: "Rackmount server Dell PowerEdge, UPS online, isolated subnet environment", capacity: "32 Siswa" }
     ],
     stats: {
-      studentsCount: 450,
+      studentsCount: 380,
       labCount: 3,
-      employmentRate: "91.8% Terserap Kerja / Wirausaha"
+      employmentRate: "93.4% Terserap Kerja / Wirausaha"
+    }
+  },
+  {
+    id: 2,
+    name: "Manajemen Perkantoran & Layanan Bisnis",
+    abbreviation: "MPLB",
+    slug: "manajemen-perkantoran-dan-layanan-bisnis",
+    shortDescription: "Mempelajari tata kelola administrasi perkantoran digital, otomatisasi arsip elektronik, komunikasi bisnis profesional, dan customer relations.",
+    fullDescription: "Program Keahlian Manajemen Perkantoran dan Layanan Bisnis (MPLB) mencetak tenaga administrasi profesional yang cakap mengelola perkantoran modern, otomatisasi dokumen berbasis cloud, pelayanan prima (service excellence), keprotokoleran, serta operasional bisnis digital.",
+    competencies: [
+      "Otomatisasi Tata Kelola Perkantoran Digital (Cloud Office Suite)",
+      "Manajemen Kearsipan Elektronik & Digital Filing System",
+      "Komunikasi Bisnis, Public Relations & Layanan Humas",
+      "Pengelolaan Kas Kecil & Administrasi Transaksi Bisnis",
+      "Customer Relationship Management (CRM) & Protokoler"
+    ],
+    careerProspects: [
+      "Staff Administrasi Perkantoran Modern",
+      "Executive Administrative Assistant",
+      "Customer Service Specialist",
+      "Public Relations Assistant",
+      "Electronic Document Controller"
+    ],
+    industryPartners: [
+      { name: "PT Astra International" },
+      { name: "Bank Syariah Indonesia (BSI)" },
+      { name: "Asosiasi Profesi Administrasi Perkantoran" },
+      { name: "PT Pos Indonesia (Persero)" }
+    ],
+    headOfProgram: {
+      name: "Dra. Hj. Nurjanah, M.M.",
+      title: "Kepala Program Keahlian MPLB",
+      photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400"
+    },
+    featuredImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200",
+    facilities: [
+      { name: "Lab Simulasi Perkantoran Modern", description: "Workstation PC kantor modern, scanner ADF berkecepatan tinggi, sistem intercom", capacity: "36 Siswa" },
+      { name: "Digital Conference & Meeting Room", description: "Smart interactive display board, audio conference system, ergonomic office pods", capacity: "30 Siswa" },
+      { name: "Lab Kearsipan Digital & Mini Bank", description: "Software sistem arsip elektronik, cash counter machine, customer handling suite", capacity: "32 Siswa" }
+    ],
+    stats: {
+      studentsCount: 320,
+      labCount: 3,
+      employmentRate: "92.5% Terserap Kerja / Wirausaha"
     }
   },
   {
     id: 3,
-    name: "Akuntansi & Keuangan Lembaga",
-    abbreviation: "AKL",
-    slug: "akuntansi-dan-keuangan-lembaga",
-    shortDescription: "Menguasai pembukuan keuangan modern, software akuntansi digital (Accurate & MYOB), perpajakan, dan operasional perbankan.",
-    fullDescription: "Program Keahlian Akuntansi dan Keuangan Lembaga (AKL) membekali lulusan dengan kemahiran telaah siklus akuntansi perusahaan jasa, dagang, dan manufaktur, tata kelola keuangan perbankan, kepatuhan pajak digital, serta pengoperasian sistem informasi keuangan berbasis cloud.",
+    name: "Animasi",
+    abbreviation: "ANIMASI",
+    slug: "animasi",
+    shortDescription: "Menguasai rancang bangun animasi 2D & 3D, character design, digital sculpting, motion graphics, serta visual effects berstandar studio profesional.",
+    fullDescription: "Program Keahlian Animasi membekali peserta didik dengan kecakapan seni visual dan teknologi kreatif, mulai dari pra-produksi (storyboard & concept art), produksi animasi 2D/3D (modeling, rigging, animating), hingga pasca-produksi (lighting, VFX, compositing, & sound editing).",
     competencies: [
-      "Siklus Akuntansi Komprehensif & Pelaporan Keuangan",
-      "Komputerisasi Akuntansi (Accurate, MYOB, & Excel Financial)",
-      "Manajemen Pajak Perorangan & Badan (e-SPT)",
-      "Operasional Perbankan & FinTech Dasar",
-      "Audit Keuangan & Tata Kelola Administrasi Kas"
+      "Concept Art, Character Design & Storyboarding",
+      "Pemodelan 3D, Texturing & Rigging (Blender & Maya)",
+      "Animasi 2D & Digital Drawing (Clip Studio Paint & Toon Boom)",
+      "Motion Graphics & Visual Effects (After Effects)",
+      "Compositing, Lighting & Rendering Pipeline"
     ],
     careerProspects: [
-      "Staff Akuntansi & Keuangan",
-      "Junior Auditor Kantor Akuntan Publik (KAP)",
-      "Teller & Customer Service Perbankan",
-      "Tax Compliance Officer",
-      "Wirausaha Mandiri & Analis Finansial"
+      "2D & 3D Animator",
+      "Character & Concept Artist",
+      "3D Modeler & Rigging Specialist",
+      "Motion Graphic Designer",
+      "Storyboard & Layout Artist"
     ],
     industryPartners: [
-      { name: "Bank Syariah Indonesia (BSI)" },
-      { name: "PT Pegadaian (Persero)" },
-      { name: "Kantor Akuntan Publik Hadori Sugiarto" },
-      { name: "PT Pos Indonesia Finansial" }
+      { name: "Studio Animasi Enspire (ESDA)" },
+      { name: "Kumata Animation Studio" },
+      { name: "Asosiasi Industri Animasi Indonesia (AINAKI)" },
+      { name: "Infinite Studios" }
     ],
     headOfProgram: {
-      name: "Dra. Siti Rahmawati, M.Ak.",
-      title: "Kepala Program Keahlian AKL",
-      photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400"
+      name: "Ir. Fauzan Ramadhan, M.Kom.",
+      title: "Kepala Program Keahlian Animasi",
+      photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400"
     },
-    featuredImage: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=1200",
+    featuredImage: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=1200",
     facilities: [
-      { name: "Lab Mini Bank & FinTech", description: "Counter teller bank simulasi, mesin hitung uang, POS register terminal", capacity: "32 Siswa" },
-      { name: "Lab Komputer Akuntansi Digital", description: "36 PC dengan lisensi resmi Accurate Accounting 5 & MYOB Premier v19", capacity: "36 Siswa" }
+      { name: "Lab Animasi & Digital Painting", description: "Display drawing tablet Wacom Cintiq, PC workstation Intel Core i7 GPU RTX", capacity: "32 Siswa" },
+      { name: "Studio Foley Sound & Audio Suite", description: "Microphone condenser Rode, audio interface studio, soundproof recording booth", capacity: "24 Siswa" },
+      { name: "Render Farm & Mini Theater Preview", description: "Server render node paralel, 4K projection display, color calibrated monitors", capacity: "30 Siswa" }
     ],
     stats: {
-      studentsCount: 330,
-      labCount: 2,
-      employmentRate: "92.5% Terserap Kerja / Wirausaha"
+      studentsCount: 260,
+      labCount: 3,
+      employmentRate: "90.2% Terserap Kerja / Wirausaha"
+    }
+  },
+  {
+    id: 4,
+    name: "Kuliner",
+    abbreviation: "KULINER",
+    slug: "kuliner",
+    shortDescription: "Menguasai seni pengolahan makanan nusantara & internasional, pastry bakery, food styling, table manner, serta culinary entrepreneurship.",
+    fullDescription: "Program Keahlian Kuliner membina calon juru masak dan technopreneur tata boga profesional dengan standar mutu kebersihan, keamanan pangan (HACCP), teknik olah kuliner kontinental dan nusantara, pembuatan roti & kue pastry modern, serta manajemen food & beverage komersial.",
+    competencies: [
+      "Pengolahan Masakan Kontinental & Masakan Tradisional Nusantara",
+      "Pastry, Bakery, Cake Decorating & Artisan Bread",
+      "Tata Hidang, Barista & Food and Beverage Service",
+      "Sanitasi, Keamanan Pangan & Standar Higiene HACCP",
+      "Food Costing, Menu Engineering & Wirausaha Kuliner"
+    ],
+    careerProspects: [
+      "Commis Chef & Cook Hotel / Restoran",
+      "Pastry & Bakery Chef",
+      "Food Stylist & Culinary Content Specialist",
+      "F&B Service Specialist & Barista",
+      "Technopreneur Kuliner & Catering Owner"
+    ],
+    industryPartners: [
+      { name: "Indonesian Chef Association (ICA)" },
+      { name: "Hotel Santika Premiere" },
+      { name: "Aston Hotel & Resort" },
+      { name: "PT Nippon Indosari Corpindo" }
+    ],
+    headOfProgram: {
+      name: "Chef Rahmat Hidayat, S.Pd., C.C.",
+      title: "Kepala Program Keahlian Kuliner",
+      photo: "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&q=80&w=400"
+    },
+    featuredImage: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=1200",
+    facilities: [
+      { name: "Dapur Komersial Standar Industri", description: "Stainless steel commercial range, convection oven, salamander grill, stainless prep table", capacity: "32 Siswa" },
+      { name: "Lab Pastry & Bakery Terpadu", description: "Spiral mixer heavy-duty, proofing box proofer, stone hearth oven deck", capacity: "30 Siswa" },
+      { name: "Restoran Praktek & Banquet Simulation", description: "Dining table banquet setup, espresso machine commercial, POS billing system", capacity: "36 Siswa" }
+    ],
+    stats: {
+      studentsCount: 240,
+      labCount: 3,
+      employmentRate: "93.8% Terserap Kerja / Wirausaha"
     }
   }
 ];
@@ -609,5 +692,95 @@ export const galleryImagesData: GalleryImage[] = [
     imagePath: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=1200",
     caption: "Penganugerahan piala juara umum LKS oleh Kepala Sekolah di depan seluruh siswa",
     date: "2026-05-30"
+  }
+];
+
+export const schoolVisionMissionData: SchoolVisionMissionData = {
+  vision: "Menjadi SMK Unggul yang Menghasilkan Lulusan Berakhlak Mulia, Kompeten di Bidang Teknologi, dan Berdaya Saing Global.",
+  visionExplanation: "Visi ini menjadi kompas bagi seluruh tenaga pendidik dan kependidikan dalam mengarahkan potensi siswa agar siap diserap industri maupun melanjutkan studi ke jenjang yang lebih tinggi.",
+  missions: [
+    {
+      number: "01",
+      title: "Pembentukan Karakter & Akhlak Mulia",
+      description: "Menanamkan nilai-nilai keimanan, ketakwaan, kejujuran, dan kedisiplinan berbasis pembinaan adab santun dalam seluruh aktivitas keseharian siswa."
+    },
+    {
+      number: "02",
+      title: "Pendidikan Kejuruan Adaptif & Berstandar Industri",
+      description: "Menyelenggarakan proses pembelajaran vokasi yang selaras dengan perkembangan teknologi terdepan (link and match) dan standar kompetensi nasional (BNSP) serta internasional."
+    },
+    {
+      number: "03",
+      title: "Penguatan Budaya Kerja & Kewirausahaan",
+      description: "Membiasakan budaya kerja industri (5R/5S) sejak dini serta menumbuhkembangkan jiwa technopreneurship yang mandiri dan solutif."
+    },
+    {
+      number: "04",
+      title: "Pengembangan Kemitraan Strategis DUDI",
+      description: "Memperluas jejaring kerjasama kemitraan dengan dunia usaha, industri, dan perguruan tinggi untuk optimalisasi Praktik Kerja Lapangan (PKL) dan penyaluran lulusan."
+    },
+    {
+      number: "05",
+      title: "Sarana Prasarana Ramah Lingkungan & Berkelanjutan",
+      description: "Menyediakan sarana dan prasarana laboratorium berteknologi modern, aman, inklusif, dan berwawasan lingkungan."
+    }
+  ],
+  coreValues: [
+    {
+      title: "Integritas",
+      desc: "Menjunjung tinggi kejujuran, komitmen, dan pertanggungjawaban moral.",
+      iconName: "ShieldCheck"
+    },
+    {
+      title: "Profesional",
+      desc: "Bekerja tuntas dengan standar mutu keahlian dan etika kerja tinggi.",
+      iconName: "Target"
+    },
+    {
+      title: "Religius",
+      desc: "Berpijak pada nilai-nilai ketakwaan, adab mulia, dan toleransi santun.",
+      iconName: "Heart"
+    },
+    {
+      title: "Inovatif",
+      desc: "Kreatif, terbuka pada pembaruan teknologi, dan berorientasi solusi.",
+      iconName: "LightbulbFilament"
+    }
+  ]
+};
+
+export const schoolAdvantagesData: SchoolAdvantage[] = [
+  {
+    id: 1,
+    title: "SMK Pusat Keunggulan (SMK PK)",
+    subtitle: "Program Unggulan Kemendikbudristek RI",
+    description: "Ditetapkan secara resmi oleh Kemendikbudristek sebagai SMK Pusat Keunggulan (SMK PK) skema reguler baru. Menghadirkan ekosistem pembelajaran berbasis industri modern, teaching factory terpadu, dan keselarasan kurikulum bersama puluhan mitra DUDI nasional.",
+    category: "Status & Prestasi Institusi",
+    badge: "SMK PK Kemendikbudristek",
+    highlightMetric: "Terakreditasi A (Unggul)",
+    icon: "Trophy",
+    isFeatured: true
+  },
+  {
+    id: 2,
+    title: "Sekolah Adiwiyata",
+    subtitle: "Kampus Hijau & Budaya Peduli Lingkungan Hidup",
+    description: "Meraih predikat resmi Sekolah Adiwiyata atas dedikasi mewujudkan lingkungan pendidikan berbudaya lingkungan hidup, program zero-waste, efisiensi energi hijau, serta pembiasaan karakter peduli kelestarian alam yang asri dan sehat.",
+    category: "Pelestarian Lingkungan",
+    badge: "Kampus Hijau & Asri",
+    highlightMetric: "Sekolah Berbudaya Lingkungan",
+    icon: "Leaf",
+    isFeatured: false
+  },
+  {
+    id: 3,
+    title: "Memiliki LSP-P1 Berlisensi BNSP",
+    subtitle: "Uji Kompetensi Mandiri Standar Nasional",
+    description: "Memiliki lisensi resmi Lembaga Sertifikasi Profesi Pihak Pertama (LSP-P1) dari Badan Nasional Sertifikasi Profesi (BNSP) untuk menyelenggarakan asesmen keahlian mandiri dan menerbitkan sertifikasi profesi resmi berlogo Garuda Emas bagi seluruh lulusan.",
+    category: "Standarisasi Kompetensi",
+    badge: "Lisensi Resmi BNSP",
+    highlightMetric: "Sertifikat Garuda Emas",
+    icon: "Certificate",
+    isFeatured: false
   }
 ];
