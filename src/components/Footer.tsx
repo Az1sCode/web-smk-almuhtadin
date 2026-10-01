@@ -9,12 +9,13 @@ import {
   YoutubeLogo, 
   FacebookLogo, 
   WhatsappLogo,
-  ShieldCheck,
-  LockKey
+  ShieldCheck
 } from '@phosphor-icons/react';
-import { schoolMetadata } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
 
 export const Footer: React.FC = () => {
+  const { settings } = useSchoolData();
+
   return (
     <footer className="bg-midnight text-white pt-16 pb-12 border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,10 +29,10 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-extrabold text-xl tracking-tight text-white">
-                  SMK Al-Muhtadin
+                  {settings?.name || 'SMK Al-Muhtadin'}
                 </span>
                 <span className="text-xs text-white/60 font-mono tracking-wider">
-                  NPSN: {schoolMetadata.npsn} • {schoolMetadata.accreditation}
+                  NPSN: {settings?.npsn || '20231412'} • {settings?.accreditation || 'Terakreditasi A'}
                 </span>
               </div>
             </div>
@@ -43,7 +44,7 @@ export const Footer: React.FC = () => {
             {/* Social Channels */}
             <div className="flex items-center gap-3 pt-2">
               <a
-                href="https://instagram.com"
+                href={settings?.socialMedia?.instagram || 'https://instagram.com'}
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-lg bg-white/5 hover:bg-azure text-white/80 hover:text-white flex items-center justify-center transition-colors"
@@ -52,7 +53,7 @@ export const Footer: React.FC = () => {
                 <InstagramLogo size={18} weight="bold" />
               </a>
               <a
-                href="https://youtube.com"
+                href={settings?.socialMedia?.youtube || 'https://youtube.com'}
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-lg bg-white/5 hover:bg-red-600 text-white/80 hover:text-white flex items-center justify-center transition-colors"
@@ -61,7 +62,7 @@ export const Footer: React.FC = () => {
                 <YoutubeLogo size={18} weight="bold" />
               </a>
               <a
-                href="https://facebook.com"
+                href={settings?.socialMedia?.facebook || 'https://facebook.com'}
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-lg bg-white/5 hover:bg-facebook text-white/80 hover:text-white flex items-center justify-center transition-colors"
@@ -70,7 +71,7 @@ export const Footer: React.FC = () => {
                 <FacebookLogo size={18} weight="bold" />
               </a>
               <a
-                href={schoolMetadata.whatsappUrl}
+                href={settings?.whatsappUrl || 'https://wa.me/6281234567890'}
                 target="_blank"
                 rel="noreferrer"
                 className="w-9 h-9 rounded-lg bg-white/5 hover:bg-whatsapp text-white/80 hover:text-white flex items-center justify-center transition-colors"
@@ -140,19 +141,19 @@ export const Footer: React.FC = () => {
             <div className="space-y-3 text-sm text-slate-300">
               <div className="flex items-start gap-2.5">
                 <MapPin size={18} className="shrink-0 mt-0.5" />
-                <span className="text-xs leading-relaxed">{schoolMetadata.address}</span>
+                <span className="text-xs leading-relaxed">{settings?.address || 'Jl. Raya Sawangan No. 12, Pancoran Mas, Depok, Jawa Barat 16436'}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone size={16} className="shrink-0" />
-                <span className="text-xs font-mono">{schoolMetadata.phone}</span>
+                <span className="text-xs font-mono">{settings?.phone || '(021) 777-8899'}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <EnvelopeSimple size={16} className="shrink-0" />
-                <span className="text-xs font-mono">{schoolMetadata.email}</span>
+                <span className="text-xs font-mono">{settings?.email || 'info@smkalmuhtadin.sch.id'}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <WhatsappLogo size={16} className="shrink-0" />
-                <span className="text-xs font-mono">{schoolMetadata.whatsappNumber}</span>
+                <span className="text-xs font-mono">{settings?.whatsappNumber || '0812-3456-7890'}</span>
               </div>
             </div>
           </div>

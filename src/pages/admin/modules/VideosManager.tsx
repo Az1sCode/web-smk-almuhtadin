@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Trash, 
@@ -7,17 +7,19 @@ import {
   X, 
   Check, 
   CheckCircle,
-  Play,
-  Star
+  Play
 } from '@phosphor-icons/react';
 import { VideoItem } from '../../../types';
 import { contentServices } from '../../../services/contentServices';
+import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
+import { EmptyState } from '../../../components/common/EmptyState';
 
 export const VideosManager: React.FC = () => {
   const [videos, setVideos] = useState<VideoItem[]>(() => contentServices.getVideos());
   const [editingItem, setEditingItem] = useState<VideoItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState('');
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   // Form states
   const [title, setTitle] = useState('');
@@ -25,7 +27,28 @@ export const VideosManager: React.FC = () => {
   const [extractedId, setExtractedId] = useState('');
   const [description, setDescription] = useState('');
   const [duration, setDuration] = useState('03:45');
-  const [isFeatured, setIsFeatured] = useState(false);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isModalOpen]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        setIsModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
 
   const showToast = (msg: string) => {
     setNotification(msg);
@@ -52,7 +75,6 @@ export const VideosManager: React.FC = () => {
     setExtractedId('');
     setDescription('');
     setDuration('04:30');
-    setIsFeatured(false);
     setIsModalOpen(true);
   };
 
@@ -63,7 +85,6 @@ export const VideosManager: React.FC = () => {
     setExtractedId(item.youtubeId);
     setDescription(item.description);
     setDuration(item.duration);
-    setIsFeatured(!!item.isFeatured);
     setIsModalOpen(true);
   };
 
@@ -86,7 +107,7 @@ export const VideosManager: React.FC = () => {
         month: 'short',
         year: 'numeric'
       }),
-      isFeatured
+      isFeatured: false
     });
 
     setVideos(contentServices.getVideos());
@@ -94,10 +115,11 @@ export const VideosManager: React.FC = () => {
     showToast(editingItem ? 'Tautan video berhasil diperbarui!' : 'Video YouTube baru berhasil ditambahkan!');
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('Hapus video ini dari galeri?')) {
-      contentServices.deleteVideo(id);
+  const handleConfirmDelete = () => {
+    if (deleteTargetId !== null) {
+      contentServices.deleteVideo(deleteTargetId);
       setVideos(contentServices.getVideos());
+      setDeleteTargetId(null);
       showToast('Video telah dihapus.');
     }
   };
@@ -112,225 +134,261 @@ export const VideosManager: React.FC = () => {
         </div>
       )}
 
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteTargetId !== null}
+        title="Hapus Video Galeri?"
+        message="Video ini akan dihapus dari daftar putar dan galeri publik sekolah."
+        confirmLabel="Ya, Hapus"
+        cancelLabel="Batal"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
+
       {/* Header */}
       <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold text-ink">Galeri Video YouTube Resmi</h2>
             <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 font-mono text-[10px] font-bold">
-              {videos.length} Video Terpasang
+              {videos.length} Video
             </span>
           </div>
-          <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-            Sistem otomatis mengekstrak ID video 11 karakter dan mengambil thumbnail resmi langsung dari CDN YouTube.
+          <p className="text-xs text-ink-muted mt-1">
+            Embed video resmi sekolah dari YouTube. Video paling baru akan otomatis dimunculkan di halaman Beranda.
           </p>
         </div>
 
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm shrink-0 cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-navy text-white text-xs font-bold shadow-md hover:bg-navy-light transition-all active:scale-95 shrink-0"
         >
           <Plus size={16} weight="bold" />
-          <span>Tambah Tautan Video</span>
+          Tambah Tautan Video
         </button>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-600 font-mono uppercase text-[11px] border-b border-slate-200">
-              <tr>
-                <th className="p-3.5">Pratinjau Thumbnail</th>
-                <th className="p-3.5">Judul Video Dokumentasi</th>
-                <th className="p-3.5">YouTube ID</th>
-                <th className="p-3.5">Durasi</th>
-                <th className="p-3.5">Tanggal</th>
-                <th className="p-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {videos.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                  <td className="p-3.5">
-                    <div className="relative w-24 aspect-video rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 group">
-                      <img
-                        src={`https://img.youtube.com/vi/${item.youtubeId}/hqdefault.jpg`}
-                        alt={item.title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-navy/30 flex items-center justify-center">
-                        <Play size={16} weight="fill" className="text-white drop-shadow-md" />
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-3.5">
-                    <div className="max-w-xs sm:max-w-md">
-                      <div className="flex items-center gap-1.5">
-                        {item.isFeatured && (
-                          <Star size={13} weight="fill" className="text-gold shrink-0" />
-                        )}
-                        <p className="font-bold text-ink truncate">{item.title}</p>
-                      </div>
-                      <p className="text-[11px] text-ink-muted line-clamp-1 mt-0.5">{item.description}</p>
-                    </div>
-                  </td>
-                  <td className="p-3.5">
-                    <code className="px-2 py-0.5 rounded bg-azure-soft font-mono text-azure text-[11px] font-bold">
-                      {item.youtubeId}
-                    </code>
-                  </td>
-                  <td className="p-3.5 font-mono text-ink-muted">{item.duration}</td>
-                  <td className="p-3.5 font-mono text-ink-muted whitespace-nowrap">{item.publishedDate}</td>
-                  <td className="p-3.5 text-right">
-                    <div className="inline-flex items-center gap-1">
-                      <button
-                        onClick={() => handleOpenEdit(item)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-navy hover:bg-slate-100 transition-colors"
-                        title="Edit Video"
-                      >
-                        <PencilSimple size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                        title="Hapus Video"
-                      >
-                        <Trash size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Video Cards Grid / Empty State */}
+      {videos.length === 0 ? (
+        <EmptyState
+          title="Belum Ada Video"
+          message="Galeri video YouTube sekolah masih kosong. Tambahkan tautan video YouTube pertama Anda sekarang."
+          icon={<VideoCamera size={32} weight="duotone" className="text-rose-500" />}
+          actionLabel="Tambah Video YouTube"
+          onActionClick={handleOpenAdd}
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {videos.map((vid) => (
+            <div
+              key={vid.id}
+              className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper flex flex-col justify-between group hover:shadow-md transition-all"
+            >
+              <div className="relative aspect-video w-full bg-slate-900 overflow-hidden">
+                <img
+                  src={`https://img.youtube.com/vi/${vid.youtubeId}/hqdefault.jpg`}
+                  alt={vid.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800';
+                  }}
+                />
+                <div className="absolute inset-0 bg-navy/30 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-white/90 text-rose-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Play size={20} weight="fill" className="ml-1" />
+                  </div>
+                </div>
+
+                <div className="absolute bottom-2.5 right-2.5 px-2 py-0.5 rounded-md bg-black/70 text-white font-mono text-[10px]">
+                  {vid.duration}
+                </div>
+              </div>
+
+              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                <div className="space-y-1.5">
+                  <h3 className="font-bold text-sm text-ink line-clamp-2 leading-snug group-hover:text-azure transition-colors">
+                    {vid.title}
+                  </h3>
+                  <p className="text-xs text-ink-muted line-clamp-2 leading-relaxed">
+                    {vid.description}
+                  </p>
+                  <p className="text-[11px] font-mono text-slate-400 pt-1">
+                    ID: {vid.youtubeId} • {vid.publishedDate}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+                  <a
+                    href={vid.youtubeUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-xs font-semibold text-azure hover:underline inline-flex items-center gap-1"
+                  >
+                    Buka YouTube
+                  </a>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleOpenEdit(vid)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-navy hover:bg-slate-100 transition-colors"
+                      title="Edit Detail"
+                    >
+                      <PencilSimple size={16} />
+                    </button>
+                    <button
+                      onClick={() => setDeleteTargetId(vid.id)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                      title="Hapus Video"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
+      )}
 
       {/* Edit / Add Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-elevated border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-navy/70 backdrop-blur-xs overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false);
+          }}
+        >
+          <div 
+            className="relative bg-white rounded-3xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-elevated border border-slate-200 overflow-hidden my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header (Pinned) */}
+            <div className="flex items-center justify-between border-b border-slate-100 p-5 sm:p-6 pb-4 shrink-0 bg-white">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
                   <VideoCamera size={20} weight="duotone" />
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-ink">
-                    {editingItem ? 'Edit Video YouTube' : 'Tambah Video YouTube'}
+                    {editingItem ? 'Edit Video YouTube' : 'Tambah Video Baru'}
                   </h3>
-                  <p className="text-xs text-ink-muted">Penyimpanan hemat disk server melalui YouTube CDN.</p>
+                  <p className="text-xs text-ink-muted">Sematkan konten dari saluran YouTube SMK Al-Muhtadin.</p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-ink hover:bg-slate-100"
+                className="p-2 rounded-xl text-slate-400 hover:text-ink hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+                aria-label="Tutup Modal"
               >
-                <X size={18} />
+                <X size={20} weight="bold" />
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-ink mb-1">
-                  URL Video YouTube <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={youtubeUrl}
-                  onChange={handleUrlChange}
-                  placeholder="https://www.youtube.com/watch?v=..."
-                  required
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-ink focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
-                />
-              </div>
-
-              {/* Extraction Preview */}
-              {extractedId ? (
-                <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center gap-4 text-xs">
-                  <img
-                    src={`https://img.youtube.com/vi/${extractedId}/hqdefault.jpg`}
-                    alt="Preview"
-                    className="w-24 aspect-video rounded-lg object-cover border border-emerald-300"
-                  />
-                  <div className="space-y-1">
-                    <p className="font-bold text-emerald-800 flex items-center gap-1.5">
-                      <CheckCircle size={16} weight="fill" className="text-emerald-600" />
-                      ID Terdeteksi: <code className="font-mono text-emerald-950 font-bold">{extractedId}</code>
-                    </p>
-                    <p className="text-[11px] text-emerald-700">Thumbnail valid dan siap disematkan.</p>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-[11px] text-ink-muted font-mono">
-                  Tempel URL YouTube (cth: <code>youtube.com/watch?v=ScMzIvxBSi4</code>)
-                </p>
-              )}
-
-              <div>
-                <label className="block text-xs font-bold text-ink mb-1">
-                  Judul Video Dokumentasi <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Contoh: Profil SMK Al-Muhtadin 2025"
-                  required
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink font-semibold focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleSave} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 overscroll-contain">
                 <div>
-                  <label className="block text-xs font-bold text-ink mb-1">Perkiraan Durasi</label>
+                  <label className="block text-xs font-bold text-ink mb-1">
+                    Judul Video <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     type="text"
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                    placeholder="04:15"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-ink"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Contoh: Profil Sekolah & Fasilitas Lab TKJ"
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink font-semibold focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
                   />
                 </div>
 
-                <div className="flex items-center gap-2 pt-6">
-                  <input
-                    type="checkbox"
-                    id="featVid"
-                    checked={isFeatured}
-                    onChange={(e) => setIsFeatured(e.target.checked)}
-                    className="w-4 h-4 accent-navy rounded cursor-pointer"
-                  />
-                  <label htmlFor="featVid" className="text-xs font-bold text-ink cursor-pointer">
-                    Video Utama (Featured)
+                <div>
+                  <label className="block text-xs font-bold text-ink mb-1">
+                    Tautan YouTube (URL) <span className="text-rose-500">*</span>
                   </label>
+                  <input
+                    type="url"
+                    value={youtubeUrl}
+                    onChange={handleUrlChange}
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-ink focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
+                  />
+                  {extractedId ? (
+                    <p className="text-[11px] text-emerald-600 font-mono mt-1.5 flex items-center gap-1">
+                      <CheckCircle size={14} weight="fill" /> YouTube ID Valid: {extractedId}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-ink-muted mt-1.5">
+                      Tempelkan tautan video YouTube lengkap atau tautan pendek (youtu.be).
+                    </p>
+                  )}
+                </div>
+
+                {extractedId && (
+                  <div className="rounded-xl overflow-hidden border border-slate-200 bg-black aspect-video relative max-h-48 w-full mx-auto">
+                    <img
+                      src={`https://img.youtube.com/vi/${extractedId}/mqdefault.jpg`}
+                      alt="Preview Thumbnail"
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-xs font-bold gap-2">
+                      <Play size={20} weight="fill" className="text-rose-500" />
+                      Preview Berhasil Terhubung
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-ink mb-1">Durasi Video</label>
+                    <input
+                      type="text"
+                      value={duration}
+                      onChange={(e) => setDuration(e.target.value)}
+                      placeholder="04:20"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-ink focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-ink mb-1">ID Video (Otomatis)</label>
+                    <input
+                      type="text"
+                      readOnly
+                      value={extractedId}
+                      placeholder="Auto extract"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-mono text-slate-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-ink mb-1">Deskripsi Singkat</label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                    placeholder="Keterangan singkat mengenai isi rekaman video..."
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure resize-none"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-ink mb-1">Deskripsi Singkat Video</label>
-                <textarea
-                  rows={3}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Ringkasan liputan atau acara..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink leading-relaxed"
-                />
-              </div>
-
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              {/* Footer (Pinned) */}
+              <div className="p-4 sm:p-5 flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/70 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-ink-muted hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-ink-muted hover:bg-slate-200/60 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
                   disabled={!extractedId}
-                  className="px-5 py-2 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-5 py-2.5 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 >
                   Simpan Video
                 </button>

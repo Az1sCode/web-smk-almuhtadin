@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Trash, 
@@ -11,6 +11,10 @@ import {
 } from '@phosphor-icons/react';
 import { NewsItem } from '../../../types';
 import { contentServices } from '../../../services/contentServices';
+import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
+import { ImageUploadField } from '../../../components/admin/ImageUploadField';
+import { EmptyState } from '../../../components/common/EmptyState';
+import { MarkdownEditor } from '../../../components/admin/MarkdownEditor';
 
 export const NewsManager: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>(() => contentServices.getNews());
@@ -19,6 +23,29 @@ export const NewsManager: React.FC = () => {
   const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState('');
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  // Scroll lock when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isModalOpen]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        setIsModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
 
   // Form states
   const [title, setTitle] = useState('');
@@ -82,7 +109,7 @@ export const NewsManager: React.FC = () => {
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
 
-    const saved = contentServices.saveNews({
+    contentServices.saveNews({
       id: editingItem ? editingItem.id : undefined,
       title,
       slug: editingItem?.slug || slug,
@@ -111,9 +138,14 @@ export const NewsManager: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm('Hapus artikel berita ini secara permanen?')) {
-      contentServices.deleteNews(id);
+    setDeleteTargetId(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteTargetId !== null) {
+      contentServices.deleteNews(deleteTargetId);
       setNews(contentServices.getNews());
+      setDeleteTargetId(null);
       showToast('Berita telah dihapus.');
     }
   };
@@ -127,6 +159,18 @@ export const NewsManager: React.FC = () => {
           <span>{notification}</span>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteTargetId !== null}
+        title="Hapus Artikel Berita?"
+        message="Artikel berita ini akan dihapus secara permanen dari arsip berita sekolah."
+        confirmLabel="Ya, Hapus"
+        cancelLabel="Batal"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
 
       {/* Header */}
       <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -267,11 +311,20 @@ export const NewsManager: React.FC = () => {
 
       {/* Edit / Create Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-elevated border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-navy/70 backdrop-blur-xs overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false);
+          }}
+        >
+          <div 
+            className="relative bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-elevated border border-slate-200 overflow-hidden my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Pinned Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 p-5 sm:p-6 pb-4 shrink-0 bg-white">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-azure-soft text-navy flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-azure-soft text-navy flex items-center justify-center shrink-0">
                   <Newspaper size={20} weight="duotone" />
                 </div>
                 <div>
@@ -282,119 +335,121 @@ export const NewsManager: React.FC = () => {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-ink hover:bg-slate-100"
+                className="p-2 rounded-xl text-slate-400 hover:text-ink hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+                aria-label="Tutup Modal"
               >
-                <X size={18} />
+                <X size={20} weight="bold" />
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-ink mb-1">
-                  Judul Berita <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Judul kegiatan atau pengumuman..."
-                  required
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink font-semibold focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            {/* Scrollable Form Body */}
+            <form onSubmit={handleSave} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 overscroll-contain">
                 <div>
-                  <label className="block text-xs font-bold text-ink mb-1">Kategori</label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
-                  >
-                    <option value="Akademik">Akademik</option>
-                    <option value="Prestasi">Prestasi</option>
-                    <option value="Kegiatan Siswa">Kegiatan Siswa</option>
-                    <option value="PPDB">PPDB</option>
-                    <option value="Info">Info</option>
-                  </select>
+                  <label className="block text-xs font-bold text-ink mb-1">
+                    Judul Berita <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Judul kegiatan atau pengumuman..."
+                    required
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink font-semibold focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-ink mb-1">Kategori</label>
+                    <select
+                      value={category}
+                      onChange={(e) => setCategory(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
+                    >
+                      <option value="Akademik">Akademik</option>
+                      <option value="Prestasi">Prestasi</option>
+                      <option value="Kegiatan Siswa">Kegiatan Siswa</option>
+                      <option value="PPDB">PPDB</option>
+                      <option value="Info">Info</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-ink mb-1">Penulis</label>
+                    <input
+                      type="text"
+                      value={authorName}
+                      onChange={(e) => setAuthorName(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink"
+                    />
+                  </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-ink mb-1">Penulis</label>
-                  <input
-                    type="text"
-                    value={authorName}
-                    onChange={(e) => setAuthorName(e.target.value)}
+                  <label className="block text-xs font-bold text-ink mb-1">
+                    Kutipan Singkat (Excerpt) <span className="text-rose-500">*</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={excerpt}
+                    onChange={(e) => setExcerpt(e.target.value)}
+                    placeholder="Ringkasan 1-2 kalimat untuk kartu berita..."
+                    required
                     className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink"
+                  />
+                </div>
+
+                {/* Markdown Editor for Content Body */}
+                <MarkdownEditor
+                  value={body}
+                  onChange={setBody}
+                  label="Isi Konten Berita (Markdown)"
+                  placeholder="Tulis uraian lengkap berita di sini... Gunakan tombol toolbar di atas untuk menebalkan, membuat subjudul, poin daftar, dan lain-lain tanpa perlu tag HTML manual."
+                  minHeight="260px"
+                  required
+                />
+
+                <ImageUploadField
+                  label="Gambar Utama Artikel"
+                  value={featuredImage}
+                  onChange={setFeaturedImage}
+                  recommendedDimensions="1200 x 800 px"
+                  aspectRatioHint="3:2 / 16:9 Landscape"
+                  helperText="Unggah gambar headline yang relevan untuk kartu dan detail berita."
+                />
+
+                <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <PushPin size={18} className="text-navy" weight="duotone" />
+                    <div>
+                      <p className="text-xs font-bold text-ink">Sematkan di Teratas (Pinned Article)</p>
+                      <p className="text-[10px] text-ink-muted">Tampil di urutan pertama pada halaman Berita</p>
+                    </div>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={isPinned}
+                    onChange={(e) => setIsPinned(e.target.checked)}
+                    className="w-4 h-4 accent-navy rounded cursor-pointer"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-ink mb-1">
-                  Kutipan Singkat (Excerpt) <span className="text-rose-500">*</span>
-                </label>
-                <textarea
-                  rows={2}
-                  value={excerpt}
-                  onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder="Ringkasan 1-2 kalimat untuk kartu berita..."
-                  required
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-ink mb-1">
-                  Isi Konten Berita (Markdown / Teks)
-                </label>
-                <textarea
-                  rows={6}
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                  placeholder="Uraian lengkap berita..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink leading-relaxed"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-ink mb-1">URL Gambar Utama</label>
-                <input
-                  type="url"
-                  value={featuredImage}
-                  onChange={(e) => setFeaturedImage(e.target.value)}
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-ink"
-                />
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <div className="flex items-center gap-2">
-                  <PushPin size={18} className="text-navy" />
-                  <div>
-                    <p className="text-xs font-bold text-ink">Sematkan di Teratas (Pinned Article)</p>
-                    <p className="text-[10px] text-ink-muted">Tampil di urutan pertama pada halaman Berita</p>
-                  </div>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={isPinned}
-                  onChange={(e) => setIsPinned(e.target.checked)}
-                  className="w-4 h-4 accent-navy rounded cursor-pointer"
-                />
-              </div>
-
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              {/* Pinned Footer */}
+              <div className="p-4 sm:p-5 flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/70 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-ink-muted hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-ink-muted hover:bg-slate-200/60 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm"
+                  className="px-5 py-2.5 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                 >
                   Publikasikan Berita
                 </button>

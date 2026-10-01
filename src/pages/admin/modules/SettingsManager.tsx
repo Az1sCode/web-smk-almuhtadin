@@ -8,14 +8,20 @@ import {
   YoutubeLogo, 
   FacebookLogo, 
   TiktokLogo, 
-  Buildings
+  Buildings,
+  Broom,
+  ArrowCounterClockwise
 } from '@phosphor-icons/react';
 import { SchoolSettings } from '../../../types';
 import { contentServices } from '../../../services/contentServices';
+import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
+import { ImageUploadField } from '../../../components/admin/ImageUploadField';
 
 export const SettingsManager: React.FC = () => {
   const [settings, setSettings] = useState<SchoolSettings>(() => contentServices.getSchoolSettings());
   const [notification, setNotification] = useState('');
+  const [confirmClearDummy, setConfirmClearDummy] = useState(false);
+  const [confirmResetDefault, setConfirmResetDefault] = useState(false);
 
   const showToast = (msg: string) => {
     setNotification(msg);
@@ -28,6 +34,19 @@ export const SettingsManager: React.FC = () => {
     showToast('Pengaturan identitas sekolah berhasil disimpan!');
   };
 
+  const handleClearDummy = () => {
+    contentServices.clearDummyData();
+    setConfirmClearDummy(false);
+    showToast('Seluruh data dummy (berita, prestasi, galeri, video, slide) telah dibersihkan!');
+  };
+
+  const handleResetDefault = () => {
+    contentServices.resetToDefaultData();
+    setSettings(contentServices.getSchoolSettings());
+    setConfirmResetDefault(false);
+    showToast('Data telah dikembalikan ke pengaturan demo default.');
+  };
+
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
@@ -37,6 +56,30 @@ export const SettingsManager: React.FC = () => {
           <span>{notification}</span>
         </div>
       )}
+
+      {/* Confirm Dialog - Clear Dummy */}
+      <ConfirmDialog
+        isOpen={confirmClearDummy}
+        title="Bersihkan Semua Data Dummy?"
+        message="Tindakan ini akan mengosongkan data dummy berita, prestasi, video YouTube, album, dan hero slide agar tampilan web hanya menampilkan data riil yang Anda masukkan."
+        confirmLabel="Ya, Bersihkan Data Dummy"
+        cancelLabel="Batal"
+        variant="warning"
+        onConfirm={handleClearDummy}
+        onCancel={() => setConfirmClearDummy(false)}
+      />
+
+      {/* Confirm Dialog - Reset Default */}
+      <ConfirmDialog
+        isOpen={confirmResetDefault}
+        title="Reset ke Data Bawaan Sistem?"
+        message="Semua data CMS akan dihapus dari localStorage dan dikembalikan ke konfigurasi bawaan demo awal."
+        confirmLabel="Ya, Reset Total"
+        cancelLabel="Batal"
+        variant="danger"
+        onConfirm={handleResetDefault}
+        onCancel={() => setConfirmResetDefault(false)}
+      />
 
       {/* Header */}
       <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -101,7 +144,7 @@ export const SettingsManager: React.FC = () => {
                 type="text"
                 value={settings.npsn}
                 onChange={(e) => setSettings({ ...settings, npsn: e.target.value })}
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-mono text-ink font-bold"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-mono text-ink"
               />
             </div>
 
@@ -111,12 +154,12 @@ export const SettingsManager: React.FC = () => {
                 type="text"
                 value={settings.accreditation}
                 onChange={(e) => setSettings({ ...settings, accreditation: e.target.value })}
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs text-ink font-semibold"
+                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-ink"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-ink mb-1">Alamat Kampus</label>
+              <label className="block text-xs font-bold text-ink mb-1">Alamat Lengkap Kampus Sekolah</label>
               <input
                 type="text"
                 value={settings.address}
@@ -136,7 +179,7 @@ export const SettingsManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-ink mb-1">Email Resmi Sekolah</label>
+              <label className="block text-xs font-bold text-ink mb-1">Alamat Email Resmi</label>
               <input
                 type="email"
                 value={settings.email}
@@ -147,21 +190,21 @@ export const SettingsManager: React.FC = () => {
           </div>
         </div>
 
-        {/* Section 2: Sambutan Kepala Sekolah */}
+        {/* Section 2: Kepala Sekolah */}
         <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper space-y-4">
           <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-            <div className="w-9 h-9 rounded-xl bg-azure-soft text-navy flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gold/15 text-gold-hover flex items-center justify-center">
               <UserCircle size={20} weight="duotone" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-ink">Sambutan & Profil Kepala Sekolah</h3>
-              <p className="text-xs text-ink-muted">Tampil di Section 3 Beranda dan Halaman Profil.</p>
+              <h3 className="text-sm font-bold text-ink">Profil Kepala Sekolah</h3>
+              <p className="text-xs text-ink-muted">Tampil pada kartu sambutan di halaman utama.</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-ink mb-1">Nama Kepala Sekolah & Gelar</label>
+              <label className="block text-xs font-bold text-ink mb-1">Nama Lengkap & Gelar</label>
               <input
                 type="text"
                 value={settings.principal.name}
@@ -187,15 +230,16 @@ export const SettingsManager: React.FC = () => {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-ink mb-1">URL Foto Resmi Kepala Sekolah</label>
-              <input
-                type="url"
+              <ImageUploadField
+                label="Foto Resmi Kepala Sekolah"
                 value={settings.principal.photo}
-                onChange={(e) => setSettings({
+                onChange={(val) => setSettings({
                   ...settings,
-                  principal: { ...settings.principal, photo: e.target.value }
+                  principal: { ...settings.principal, photo: val }
                 })}
-                className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-mono text-ink"
+                recommendedDimensions="600 x 800 px"
+                aspectRatioHint="3:4 Portrait"
+                helperText="Format pas foto formal Kepala Sekolah beresolusi tajam."
               />
             </div>
 
@@ -261,7 +305,7 @@ export const SettingsManager: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-ink mb-1">URL Kanal YouTube</label>
+              <label className="block text-xs font-bold text-ink mb-1">URL Saluran YouTube</label>
               <input
                 type="url"
                 value={settings.socialMedia.youtube}
@@ -301,11 +345,41 @@ export const SettingsManager: React.FC = () => {
           </div>
         </div>
 
+        {/* Section 4: Pemeliharaan Data & Zero-Mock Policy */}
+        <div className="bg-slate-50 rounded-3xl border border-slate-200/80 p-6 shadow-whisper space-y-4">
+          <div>
+            <h3 className="text-sm font-bold text-ink">Pemeliharaan Data & Kebersihan Konten</h3>
+            <p className="text-xs text-ink-muted">
+              Fitur khusus untuk mengelola integritas data CMS dan menghapus data dummy awal.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => setConfirmClearDummy(true)}
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 text-amber-900 text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+            >
+              <Broom size={16} weight="bold" className="text-amber-700" />
+              <span>Bersihkan Semua Data Dummy (Zero-Mock)</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setConfirmResetDefault(true)}
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-ink-muted hover:text-ink text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <ArrowCounterClockwise size={16} weight="bold" />
+              <span>Reset ke Data Bawaan Sistem</span>
+            </button>
+          </div>
+        </div>
+
         {/* Submit */}
         <div className="flex justify-end">
           <button
             type="submit"
-            className="px-6 py-3 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-md"
+            className="px-6 py-3 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-md cursor-pointer"
           >
             Simpan Seluruh Pengaturan
           </button>

@@ -10,24 +10,45 @@ import {
   Check, 
   ArrowUpRight 
 } from '@phosphor-icons/react';
-import { newsData } from '../data/mockData';
+import { marked } from 'marked';
+import { useSchoolData } from '../hooks/useSchoolData';
 import { formatIndonesianDate } from '../utils/formatters';
+import { ErrorState } from '../components/common/ErrorState';
 
 export const NewsDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { news } = useSchoolData();
   const [copied, setCopied] = useState(false);
 
-  const article = newsData.find((item) => item.slug === slug);
+  const article = news.find((item) => item.slug === slug || String(item.id) === slug);
 
   if (!article) {
-    return <Navigate to="/berita" replace />;
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-16">
+        <ErrorState
+          title="Berita Tidak Ditemukan"
+          message="Artikel atau pengumuman yang Anda tuju tidak ditemukan atau mungkin sudah dihapus dari sistem."
+          backHref="/berita"
+          backLabel="Kembali ke Daftar Berita"
+        />
+      </div>
+    );
   }
 
-  const relatedNews = newsData
-    .filter((item) => item.id !== article.id)
+  const relatedNews = news
+    .filter((item) => item.id !== article.id && item.status !== 'draft')
     .slice(0, 3);
 
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+  const parsedBodyHtml = React.useMemo(() => {
+    if (!article?.body) return '';
+    try {
+      return marked.parse(article.body) as string;
+    } catch {
+      return article.body;
+    }
+  }, [article?.body]);
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(currentUrl);
@@ -101,7 +122,7 @@ export const NewsDetailPage: React.FC = () => {
       {/* Article Body */}
       <div 
         className="prose prose-slate max-w-none text-ink leading-relaxed space-y-4 font-normal text-base sm:text-lg"
-        dangerouslySetInnerHTML={{ __html: article.body }}
+        dangerouslySetInnerHTML={{ __html: parsedBodyHtml }}
       />
 
       {/* Share Buttons */}

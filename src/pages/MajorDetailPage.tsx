@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   CheckCircle, 
@@ -10,15 +10,28 @@ import {
   ArrowUpRight, 
   Sparkle 
 } from '@phosphor-icons/react';
-import { majorsData, schoolMetadata } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
+import { ErrorState } from '../components/common/ErrorState';
 
 export const MajorDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const { majors, settings } = useSchoolData();
 
-  const major = majorsData.find((item) => item.slug === slug);
+  const major = majors.find(
+    (item) => item.slug === slug || String(item.id) === slug || item.abbreviation.toLowerCase() === slug?.toLowerCase()
+  );
 
   if (!major) {
-    return <Navigate to="/jurusan" replace />;
+    return (
+      <div className="max-w-4xl mx-auto px-4 py-20">
+        <ErrorState
+          title="Jurusan Tidak Ditemukan"
+          message="Program keahlian yang Anda cari tidak tersedia atau tautan telah kedaluwarsa."
+          backHref="/jurusan"
+          backLabel="Kembali ke Daftar Jurusan"
+        />
+      </div>
+    );
   }
 
   return (
@@ -44,8 +57,15 @@ export const MajorDetailPage: React.FC = () => {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-slate-900/80 to-transparent" />
 
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gold text-slate-950 text-xs font-mono font-bold">
-            Program Keahlian: {major.abbreviation}
+          <div className="flex items-center gap-3">
+            {major.logo && (
+              <div className="w-12 h-12 rounded-2xl bg-white/95 p-1.5 shadow-md flex items-center justify-center shrink-0">
+                <img src={major.logo} alt={major.name} className="w-full h-full object-contain" />
+              </div>
+            )}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-gold text-slate-950 text-xs font-mono font-bold">
+              Program Keahlian: {major.abbreviation}
+            </div>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight">
@@ -125,16 +145,24 @@ export const MajorDetailPage: React.FC = () => {
             <h3 className="text-lg font-bold text-ink tracking-tight">
               Mitra Industri & Tempat Praktik Kerja Lapangan (PKL)
             </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {major.industryPartners.map((partner, pIdx) => (
-                <div
-                  key={pIdx}
-                  className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-center font-bold text-xs text-ink shadow-sm"
-                >
-                  {partner.name}
-                </div>
-              ))}
-            </div>
+            {major.industryPartners && major.industryPartners.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {major.industryPartners.map((partner, pIdx) => (
+                  <div
+                    key={pIdx}
+                    className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center text-center font-bold text-xs text-ink shadow-sm hover:border-azure/40 transition-colors"
+                  >
+                    {partner.name}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-6 rounded-2xl bg-slate-50/70 border border-dashed border-slate-200 text-center">
+                <p className="text-xs text-ink-muted">
+                  Daftar kemitraan industri (DUDI) untuk program keahlian ini sedang dalam proses pembaruan dan kurasi kerja sama resmi.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Specific Lab Facilities */}
@@ -201,7 +229,7 @@ export const MajorDetailPage: React.FC = () => {
               Kuota siswa terbatas demi menjamin rasio ideal 1 siswa 1 workstation komputer saat praktikum laboratorium.
             </p>
             <a
-              href={schoolMetadata.whatsappUrl}
+              href={settings?.whatsappUrl || 'https://wa.me/6281234567890'}
               target="_blank"
               rel="noreferrer"
               className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-gold hover:bg-gold-hover text-slate-950 font-bold text-xs transition-all shadow"
