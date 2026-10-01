@@ -11,6 +11,7 @@ import {
   ArrowUpRight 
 } from '@phosphor-icons/react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { useSchoolData } from '../hooks/useSchoolData';
 import { formatIndonesianDate } from '../utils/formatters';
 import { ErrorState } from '../components/common/ErrorState';
@@ -44,9 +45,10 @@ export const NewsDetailPage: React.FC = () => {
   const parsedBodyHtml = React.useMemo(() => {
     if (!article?.body) return '';
     try {
-      return marked.parse(article.body) as string;
+      const rawHtml = marked.parse(article.body) as string;
+      return DOMPurify.sanitize(rawHtml);
     } catch {
-      return article.body;
+      return DOMPurify.sanitize(article.body);
     }
   }, [article?.body]);
 

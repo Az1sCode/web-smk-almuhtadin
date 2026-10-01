@@ -105,7 +105,7 @@ export const StaffManager: React.FC = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !position.trim()) {
-      alert('Nama dan Jabatan GTK wajib diisi.');
+      showToast('Nama dan Jabatan GTK wajib diisi.');
       return;
     }
 

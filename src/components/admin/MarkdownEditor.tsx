@@ -16,6 +16,7 @@ import {
   Info
 } from '@phosphor-icons/react';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 interface MarkdownEditorProps {
   value: string;
@@ -39,13 +40,14 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  // Synchronously parse markdown to HTML for preview
+  // Synchronously parse and sanitize markdown to HTML for preview
   const renderedHtml = useMemo(() => {
     if (!value.trim()) return '';
     try {
-      return marked.parse(value, { async: false }) as string;
+      const raw = marked.parse(value, { async: false }) as string;
+      return DOMPurify.sanitize(raw);
     } catch {
-      return value;
+      return DOMPurify.sanitize(value);
     }
   }, [value]);
 

@@ -100,7 +100,7 @@ export const NewsManager: React.FC = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      alert('Judul berita wajib diisi.');
+      showToast('Judul berita wajib diisi.');
       return;
     }
 

@@ -15,20 +15,22 @@ import {
   Eye
 } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
-import { contentServices } from '../../../services/contentServices';
+import { useSchoolData } from '../../../hooks/useSchoolData';
 
 interface Props {
   onNavigateTab: (tab: string) => void;
 }
 
 export const OverviewCockpit: React.FC<Props> = ({ onNavigateTab }) => {
-  const news = contentServices.getNews();
-  const staff = contentServices.getStaff();
-  const achievements = contentServices.getAchievements();
-  const videos = contentServices.getVideos();
-  const heroSlides = contentServices.getHeroSlides();
-  const majors = contentServices.getMajors();
-  const settings = contentServices.getSchoolSettings();
+  const {
+    news,
+    staff,
+    achievements,
+    videos,
+    heroSlides,
+    majors,
+    settings
+  } = useSchoolData();
 
   const kpis = [
     {

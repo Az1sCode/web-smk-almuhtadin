@@ -67,7 +67,7 @@ export const GalleryManager: React.FC = () => {
   const handleSavePhoto = (e: React.FormEvent) => {
     e.preventDefault();
     if (!photoUrl.trim() || !caption.trim()) {
-      alert('Foto dan Keterangan wajib diisi.');
+      showToast('Foto dan Keterangan wajib diisi.');
       return;
     }
 
@@ -92,7 +92,7 @@ export const GalleryManager: React.FC = () => {
   const handleSaveAlbum = (e: React.FormEvent) => {
     e.preventDefault();
     if (!albumName.trim()) {
-      alert('Nama album wajib diisi.');
+      showToast('Nama album wajib diisi.');
       return;
     }
 

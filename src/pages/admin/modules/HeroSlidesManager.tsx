@@ -83,7 +83,7 @@ export const HeroSlidesManager: React.FC = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formHeadline.trim() || !formImage.trim()) {
-      alert('Headline dan Gambar wajib diisi.');
+      showToast('Headline dan Gambar wajib diisi.');
       return;
     }
 
@@ -104,7 +104,7 @@ export const HeroSlidesManager: React.FC = () => {
 
   const handleDelete = (id: number) => {
     if (slides.length <= 1) {
-      alert('Minimal harus ada 1 slide hero aktif di halaman beranda.');
+      showToast('Minimal harus ada 1 slide hero aktif di halaman beranda.');
       return;
     }
     setDeleteTargetId(id);

@@ -108,7 +108,7 @@ export const AchievementsManager: React.FC = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !recipientName.trim()) {
-      alert('Nama prestasi dan nama peraih wajib diisi.');
+      showToast('Nama prestasi dan nama peraih wajib diisi.');
       return;
     }
 

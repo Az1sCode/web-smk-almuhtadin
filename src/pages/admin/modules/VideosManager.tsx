@@ -91,7 +91,7 @@ export const VideosManager: React.FC = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !extractedId) {
-      alert('Judul video dan tautan YouTube valid dengan ID 11 karakter wajib diisi.');
+      showToast('Judul video dan tautan YouTube valid dengan ID 11 karakter wajib diisi.');
       return;
     }
 

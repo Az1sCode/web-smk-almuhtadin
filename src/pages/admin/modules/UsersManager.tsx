@@ -61,7 +61,7 @@ export const UsersManager: React.FC = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim()) {
-      alert('Nama dan email wajib diisi.');
+      showToast('Nama dan email wajib diisi.');
       return;
     }
 
@@ -80,7 +80,7 @@ export const UsersManager: React.FC = () => {
 
   const handleDelete = (id: number) => {
     if (users.length <= 1) {
-      alert('Minimal harus ada 1 akun administrator aktif.');
+      showToast('Minimal harus ada 1 akun administrator aktif.');
       return;
     }
     setDeleteTargetId(id);
