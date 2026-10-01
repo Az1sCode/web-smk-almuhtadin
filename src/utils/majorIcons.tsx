@@ -1,13 +1,20 @@
-import { Cpu, GlobeHemisphereWest, Calculator, Briefcase } from '@phosphor-icons/react';
+import { Network, Briefcase, FilmSlate, CookingPot } from '@phosphor-icons/react';
 
 export function getMajorIcon(abbr: string, className = "w-6 h-6") {
   switch (abbr.toUpperCase()) {
-    case 'RPL':
-      return <Cpu className={className} weight="duotone" />;
+    case 'TJKT':
     case 'TKJ':
-      return <GlobeHemisphereWest className={className} weight="duotone" />;
+      return <Network className={className} weight="duotone" />;
+    case 'MPLB':
     case 'AKL':
-      return <Calculator className={className} weight="duotone" />;
+      return <Briefcase className={className} weight="duotone" />;
+    case 'ANIMASI':
+    case 'ANM':
+      return <FilmSlate className={className} weight="duotone" />;
+    case 'KULINER':
+    case 'KLN':
+    case 'TBG':
+      return <CookingPot className={className} weight="duotone" />;
     default:
       return <Briefcase className={className} weight="duotone" />;
   }

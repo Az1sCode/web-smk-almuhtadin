@@ -102,3 +102,77 @@ export interface NewsItem {
   isPinned?: boolean;
   viewsCount: number;
 }
+
+export interface HeroSlide {
+  id: number;
+  badge: string;
+  headline: string;
+  description: string;
+  image: string;
+  imageAlt?: string;
+}
+
+export interface SchoolAdvantage {
+  id: number;
+  title: string;
+  subtitle: string;
+  description: string;
+  category: string;
+  badge?: string;
+  highlightMetric?: string;
+  icon: string;
+  isFeatured?: boolean;
+}
+
+export interface MissionItem {
+  number: string;
+  title: string;
+  description: string;
+}
+
+export interface CoreValueItem {
+  title: string;
+  desc: string;
+  iconName: string;
+}
+
+export interface SchoolVisionMissionData {
+  vision: string;
+  visionExplanation: string;
+  missions: MissionItem[];
+  coreValues: CoreValueItem[];
+}
+
+export interface AdminUser {
+  id: number;
+  name: string;
+  email: string;
+  role: 'superadmin' | 'editor';
+  avatar?: string;
+  lastLogin?: string;
+}
+
+export interface SchoolSettings {
+  name: string;
+  tagline: string;
+  npsn: string;
+  accreditation: string;
+  foundedYear: number;
+  address: string;
+  phone: string;
+  whatsappNumber: string;
+  whatsappUrl: string;
+  email: string;
+  principal: {
+    name: string;
+    title: string;
+    photo: string;
+    quote: string;
+  };
+  socialMedia: {
+    instagram: string;
+    youtube: string;
+    facebook: string;
+    tiktok: string;
+  };
+}

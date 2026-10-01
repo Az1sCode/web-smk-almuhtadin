@@ -104,18 +104,23 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-2 text-sm text-slate-300">
               <li>
-                <Link to="/jurusan/rekayasa-perangkat-lunak" className="hover:text-azure transition-colors block">
-                  Rekayasa Perangkat Lunak (RPL)
+                <Link to="/jurusan/teknik-jaringan-komputer-dan-telekomunikasi" className="hover:text-azure transition-colors block">
+                  Teknik Jaringan Komputer & Telekomunikasi (TJKT)
                 </Link>
               </li>
               <li>
-                <Link to="/jurusan/teknik-komputer-dan-jaringan" className="hover:text-azure transition-colors block">
-                  Teknik Komputer & Jaringan (TKJ)
+                <Link to="/jurusan/manajemen-perkantoran-dan-layanan-bisnis" className="hover:text-azure transition-colors block">
+                  Manajemen Perkantoran & Layanan Bisnis (MPLB)
                 </Link>
               </li>
               <li>
-                <Link to="/jurusan/akuntansi-dan-keuangan-lembaga" className="hover:text-azure transition-colors block">
-                  Akuntansi & Keuangan (AKL)
+                <Link to="/jurusan/animasi" className="hover:text-azure transition-colors block">
+                  Animasi
+                </Link>
+              </li>
+              <li>
+                <Link to="/jurusan/kuliner" className="hover:text-azure transition-colors block">
+                  Kuliner
                 </Link>
               </li>
               <li className="pt-2">

@@ -17,8 +17,10 @@ import { StaffPage } from './pages/StaffPage';
 import { AchievementsPage } from './pages/AchievementsPage';
 import { GalleryPage } from './pages/GalleryPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
+import { AdminLoginPage } from './pages/admin/AdminLoginPage';
 import { StyleGuideShowcasePage } from './pages/StyleGuideShowcasePage';
 import { AdminRouteGuard } from './components/AdminRouteGuard';
+import { AuthProvider } from './context/AuthContext';
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
@@ -42,32 +44,37 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 export function App() {
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <AppLayout>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/style-guide" element={<StyleGuideShowcasePage />} />
-          <Route path="/berita" element={<NewsPage />} />
-          <Route path="/berita/:slug" element={<NewsDetailPage />} />
-          <Route path="/profil" element={<ProfilePage />} />
-          <Route path="/visi-misi" element={<VisionMissionPage />} />
-          <Route path="/jurusan" element={<MajorsPage />} />
-          <Route path="/jurusan/:slug" element={<MajorDetailPage />} />
-          <Route path="/pengurus" element={<StaffPage />} />
-          <Route path="/prestasi" element={<AchievementsPage />} />
-          <Route path="/galeri" element={<GalleryPage />} />
-          <Route 
-            path="/admin" 
-            element={
-              <AdminRouteGuard>
-                <AdminDashboardPage />
-              </AdminRouteGuard>
-            } 
-          />
-        </Routes>
-      </AppLayout>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <AppLayout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/style-guide" element={<StyleGuideShowcasePage />} />
+            <Route path="/berita" element={<NewsPage />} />
+            <Route path="/berita/:slug" element={<NewsDetailPage />} />
+            <Route path="/profil" element={<ProfilePage />} />
+            <Route path="/visi-misi" element={<VisionMissionPage />} />
+            <Route path="/jurusan" element={<MajorsPage />} />
+            <Route path="/jurusan/:slug" element={<MajorDetailPage />} />
+            <Route path="/pengurus" element={<StaffPage />} />
+            <Route path="/prestasi" element={<AchievementsPage />} />
+            <Route path="/galeri" element={<GalleryPage />} />
+            
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLoginPage />} />
+            <Route 
+              path="/admin/*" 
+              element={
+                <AdminRouteGuard>
+                  <AdminDashboardPage />
+                </AdminRouteGuard>
+              } 
+            />
+          </Routes>
+        </AppLayout>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

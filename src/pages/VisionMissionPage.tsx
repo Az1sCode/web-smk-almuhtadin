@@ -4,61 +4,27 @@ import {
   Target, 
   Heart, 
   ShieldCheck, 
-  LightbulbFilament, 
-  Handshake 
+  LightbulbFilament 
 } from '@phosphor-icons/react';
+import { schoolVisionMissionData } from '../data/mockData';
 
 export const VisionMissionPage: React.FC = () => {
-  const missions = [
-    {
-      number: "01",
-      title: "Pembentukan Karakter & Akhlak Mulia",
-      description: "Menanamkan nilai-nilai keimanan, ketakwaan, kejujuran, dan kedisiplinan berbasis pembinaan adab santun dalam seluruh aktivitas keseharian siswa."
-    },
-    {
-      number: "02",
-      title: "Pendidikan Kejuruan Adaptif & Berstandar Industri",
-      description: "Menyelenggarakan proses pembelajaran vokasi yang selaras dengan perkembangan teknologi terdepan (link and match) dan standar kompetensi nasional (BNSP) serta internasional."
-    },
-    {
-      number: "03",
-      title: "Penguatan Budaya Kerja & Kewirausahaan",
-      description: "Membiasakan budaya kerja industri (5R/5S) sejak dini serta menumbuhkembangkan jiwa technopreneurship yang mandiri dan solutif."
-    },
-    {
-      number: "04",
-      title: "Pengembangan Kemitraan Strategis DUDI",
-      description: "Memperluas jejaring kerjasama kemitraan dengan dunia usaha, industri, dan perguruan tinggi untuk optimalisasi Praktik Kerja Lapangan (PKL) dan penyaluran lulusan."
-    },
-    {
-      number: "05",
-      title: "Sarana Prasarana Ramah Lingkungan & Berkelanjutan",
-      description: "Menyediakan sarana dan prasarana laboratorium berteknologi modern, aman, inklusif, dan berwawasan lingkungan."
-    }
-  ];
+  const { vision, visionExplanation, missions, coreValues } = schoolVisionMissionData;
 
-  const coreValues = [
-    {
-      title: "Integritas",
-      desc: "Menjunjung tinggi kejujuran, komitmen, dan pertanggungjawaban moral.",
-      icon: <ShieldCheck size={28} weight="duotone" className="text-azure" />
-    },
-    {
-      title: "Profesional",
-      desc: "Bekerja tuntas dengan standar mutu keahlian dan etika kerja tinggi.",
-      icon: <Target size={28} weight="duotone" className="text-azure" />
-    },
-    {
-      title: "Religius",
-      desc: "Berpijak pada nilai-nilai ketakwaan, adab mulia, dan toleransi santun.",
-      icon: <Heart size={28} weight="duotone" className="text-azure" />
-    },
-    {
-      title: "Inovatif",
-      desc: "Kreatif, terbuka pada pembaruan teknologi, dan berorientasi solusi.",
-      icon: <LightbulbFilament size={28} weight="duotone" className="text-azure" />
+  const renderCoreValueIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'ShieldCheck':
+        return <ShieldCheck size={28} weight="duotone" className="text-azure" />;
+      case 'Target':
+        return <Target size={28} weight="duotone" className="text-azure" />;
+      case 'Heart':
+        return <Heart size={28} weight="duotone" className="text-azure" />;
+      case 'LightbulbFilament':
+        return <LightbulbFilament size={28} weight="duotone" className="text-azure" />;
+      default:
+        return <ShieldCheck size={28} weight="duotone" className="text-azure" />;
     }
-  ];
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-16">
@@ -147,7 +113,7 @@ export const VisionMissionPage: React.FC = () => {
               className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper flex flex-col justify-between space-y-4"
             >
               <div className="w-12 h-12 rounded-2xl bg-azure-soft flex items-center justify-center">
-                {val.icon}
+                {renderCoreValueIcon(val.iconName)}
               </div>
               <div>
                 <h3 className="font-bold text-base text-ink mb-1.5">
