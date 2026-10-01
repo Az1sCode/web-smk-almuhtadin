@@ -1,12 +1,13 @@
 import React from 'react';
 import { WhatsappLogo } from '@phosphor-icons/react';
-import { schoolMetadata } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
 
 export const FloatingWhatsApp: React.FC = () => {
+  const { settings } = useSchoolData();
   return (
     <aside aria-label="Layanan WhatsApp Sekolah" className="fixed bottom-6 right-6 z-50">
       <a
-        href={schoolMetadata.whatsappUrl}
+        href={settings.whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="group relative flex items-center gap-2.5 px-4 sm:px-5 py-3 rounded-full bg-whatsapp hover:bg-whatsapp-hover text-white font-semibold text-xs sm:text-sm shadow-xl shadow-whatsapp/25 transition-all transform hover:scale-105 active:scale-95"

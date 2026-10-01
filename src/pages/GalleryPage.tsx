@@ -7,11 +7,13 @@ import {
   CalendarBlank, 
   Clock 
 } from '@phosphor-icons/react';
-import { albumsData, galleryImagesData, videosData } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
 import { LightboxModal } from '../components/LightboxModal';
 import { VideoModal } from '../components/VideoModal';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const GalleryPage: React.FC = () => {
+  const { albums, galleryImages, videos } = useSchoolData();
   const [mediaMode, setMediaMode] = useState<'photos' | 'videos'>('photos');
   const [selectedAlbumId, setSelectedAlbumId] = useState<number | 'all'>('all');
 
@@ -23,8 +25,8 @@ export const GalleryPage: React.FC = () => {
   const [activeVideo, setActiveVideo] = useState<{ id: string; title: string } | null>(null);
 
   const filteredImages = selectedAlbumId === 'all'
-    ? galleryImagesData
-    : galleryImagesData.filter((img) => img.albumId === selectedAlbumId);
+    ? galleryImages
+    : galleryImages.filter((img) => img.albumId === selectedAlbumId);
 
   const openLightbox = (index: number) => {
     setCurrentImageIndex(index);
@@ -59,7 +61,7 @@ export const GalleryPage: React.FC = () => {
             }`}
           >
             <Camera size={18} weight="bold" />
-            <span>Foto Kegiatan ({galleryImagesData.length})</span>
+            <span>Foto Kegiatan ({galleryImages.length})</span>
           </button>
           <button
             onClick={() => setMediaMode('videos')}
@@ -71,7 +73,7 @@ export const GalleryPage: React.FC = () => {
             }`}
           >
             <VideoCamera size={18} weight="bold" />
-            <span>Video YouTube ({videosData.length})</span>
+            <span>Video YouTube ({videos.length})</span>
           </button>
         </div>
       </div>
@@ -92,7 +94,7 @@ export const GalleryPage: React.FC = () => {
             >
               Semua Album Foto
             </button>
-            {albumsData.map((album) => (
+            {albums.map((album) => (
               <button
                 key={album.id}
                 onClick={() => setSelectedAlbumId(album.id)}
@@ -109,90 +111,110 @@ export const GalleryPage: React.FC = () => {
           </div>
 
           {/* Bento Photo Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredImages.map((img, idx) => (
-              <div
-                key={img.id}
-                onClick={() => openLightbox(idx)}
-                className="group relative rounded-3xl overflow-hidden aspect-[4/3] bg-slate-900 cursor-pointer shadow-whisper hover:shadow-elevated transition-all border border-slate-200"
-              >
-                <img
-                  src={img.imagePath}
-                  alt={img.caption}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
+          {filteredImages.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredImages.map((img, idx) => (
+                <div
+                  key={img.id}
+                  onClick={() => openLightbox(idx)}
+                  className="group relative rounded-3xl overflow-hidden aspect-[4/3] bg-slate-900 cursor-pointer shadow-whisper hover:shadow-elevated transition-all border border-slate-200"
+                >
+                  <img
+                    src={img.imagePath}
+                    alt={img.caption}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
 
-                <div className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform scale-90 group-hover:scale-100">
-                  <MagnifyingGlassPlus size={18} weight="bold" />
-                </div>
+                  <div className="absolute top-3.5 right-3.5 w-9 h-9 rounded-full bg-white/20 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all transform scale-90 group-hover:scale-100">
+                    <MagnifyingGlassPlus size={18} weight="bold" />
+                  </div>
 
-                <div className="absolute bottom-4 left-4 right-4 text-white space-y-1">
-                  <p className="text-xs sm:text-sm font-semibold line-clamp-2">
-                    {img.caption}
-                  </p>
-                  <span className="text-[11px] font-mono text-slate-300 block">
-                    {img.date}
-                  </span>
+                  <div className="absolute bottom-4 left-4 right-4 text-white space-y-1">
+                    <p className="text-xs sm:text-sm font-semibold line-clamp-2">
+                      {img.caption}
+                    </p>
+                    <span className="text-[11px] font-mono text-slate-300 block">
+                      {img.date}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Belum Ada Foto Dokumentasi"
+              description={
+                selectedAlbumId !== 'all'
+                  ? 'Tidak ada foto dalam album yang dipilih.'
+                  : 'Belum ada foto kegiatan yang diunggah ke galeri.'
+              }
+              actionLabel={selectedAlbumId !== 'all' ? 'Tampilkan Semua Album' : undefined}
+              onAction={selectedAlbumId !== 'all' ? () => setSelectedAlbumId('all') : undefined}
+            />
+          )}
         </div>
       )}
 
       {/* VIEW B: VIDEO YOUTUBE */}
       {mediaMode === 'videos' && (
         <div className="space-y-8 animate-fadeIn">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {videosData.map((video) => (
-              <div
-                key={video.id}
-                onClick={() => setActiveVideo({ id: video.youtubeId, title: video.title })}
-                className="group bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper hover:shadow-elevated transition-all cursor-pointer flex flex-col justify-between hover:-translate-y-1 duration-300"
-              >
-                {/* 16:9 Thumbnail Poster with Tactile Play Icon */}
-                <div className="relative aspect-video overflow-hidden bg-slate-950">
-                  <img
-                    src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
-                    alt={video.title}
-                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-95 transition-all duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+          {videos.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {videos.map((video) => (
+                <div
+                  key={video.id}
+                  onClick={() => setActiveVideo({ id: video.youtubeId, title: video.title })}
+                  className="group bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper hover:shadow-elevated transition-all cursor-pointer flex flex-col justify-between hover:-translate-y-1 duration-300"
+                >
+                  {/* 16:9 Thumbnail Poster with Tactile Play Icon */}
+                  <div className="relative aspect-video overflow-hidden bg-slate-950">
+                    <img
+                      src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
+                      alt={video.title}
+                      className="w-full h-full object-cover opacity-80 group-hover:scale-105 group-hover:opacity-95 transition-all duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
 
-                  {/* Play Button Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-14 h-14 rounded-full bg-white text-navy flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-azure group-hover:text-white transition-all duration-300">
-                      <Play size={24} weight="fill" className="translate-x-0.5" />
+                    {/* Play Button Overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-14 h-14 rounded-full bg-white text-navy flex items-center justify-center shadow-xl group-hover:scale-110 group-hover:bg-azure group-hover:text-white transition-all duration-300">
+                        <Play size={24} weight="fill" className="translate-x-0.5" />
+                      </div>
+                    </div>
+
+                    {/* Duration Badge */}
+                    <div className="absolute bottom-3 right-3">
+                      <span className="px-2.5 py-1 rounded-md bg-ink/80 backdrop-blur-md text-white font-mono text-xs">
+                        {video.duration}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Duration Badge */}
-                  <div className="absolute bottom-3 right-3">
-                    <span className="px-2.5 py-1 rounded-md bg-ink/80 backdrop-blur-md text-white font-mono text-xs">
-                      {video.duration}
-                    </span>
+                  {/* Video Info */}
+                  <div className="p-6 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-mono text-ink-muted">
+                      <CalendarBlank size={14} />
+                      <span>Rilis: {video.publishedDate}</span>
+                    </div>
+
+                    <h3 className="font-bold text-base sm:text-lg text-ink group-hover:text-navy transition-colors line-clamp-2 leading-snug">
+                      {video.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-ink-muted line-clamp-2 leading-relaxed pt-1">
+                      {video.description}
+                    </p>
                   </div>
                 </div>
-
-                {/* Video Info */}
-                <div className="p-6 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-mono text-ink-muted">
-                    <CalendarBlank size={14} />
-                    <span>Rilis: {video.publishedDate}</span>
-                  </div>
-
-                  <h3 className="font-bold text-base sm:text-lg text-ink group-hover:text-navy transition-colors line-clamp-2 leading-snug">
-                    {video.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-ink-muted line-clamp-2 leading-relaxed pt-1">
-                    {video.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              title="Belum Ada Video Kegiatan"
+              description="Belum ada video dokumentasi YouTube yang ditambahkan ke galeri sekolah."
+            />
+          )}
         </div>
       )}
 

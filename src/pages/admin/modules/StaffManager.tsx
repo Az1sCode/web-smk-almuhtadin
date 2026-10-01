@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Trash, 
@@ -10,6 +10,9 @@ import {
 } from '@phosphor-icons/react';
 import { StaffMember, StaffCategory } from '../../../types';
 import { contentServices } from '../../../services/contentServices';
+import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
+import { ImageUploadField } from '../../../components/admin/ImageUploadField';
+import { EmptyState } from '../../../components/common/EmptyState';
 
 export const StaffManager: React.FC = () => {
   const [staff, setStaff] = useState<StaffMember[]>(() => contentServices.getStaff());
@@ -18,6 +21,7 @@ export const StaffManager: React.FC = () => {
   const [editingItem, setEditingItem] = useState<StaffMember | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState('');
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   // Form states
   const [name, setName] = useState('');
@@ -28,6 +32,28 @@ export const StaffManager: React.FC = () => {
   const [photo, setPhoto] = useState('');
   const [email, setEmail] = useState('');
   const [orderIndex, setOrderIndex] = useState(1);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isModalOpen]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        setIsModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
 
   const categories: { label: string; value: string }[] = [
     { label: 'Semua GTK', value: 'all' },
@@ -79,7 +105,7 @@ export const StaffManager: React.FC = () => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !position.trim()) {
-      alert('Nama dan Jabatan GTK wajib diisi.');
+      showToast('Nama dan Jabatan GTK wajib diisi.');
       return;
     }
 
@@ -101,9 +127,14 @@ export const StaffManager: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    if (window.confirm('Hapus data GTK ini?')) {
-      contentServices.deleteStaff(id);
+    setDeleteTargetId(id);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteTargetId !== null) {
+      contentServices.deleteStaff(deleteTargetId);
       setStaff(contentServices.getStaff());
+      setDeleteTargetId(null);
       showToast('Data GTK berhasil dihapus.');
     }
   };
@@ -117,6 +148,18 @@ export const StaffManager: React.FC = () => {
           <span>{notification}</span>
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteTargetId !== null}
+        title="Hapus Data GTK?"
+        message="Data guru / tenaga kependidikan ini akan dihapus dari direktori resmi sekolah."
+        confirmLabel="Ya, Hapus"
+        cancelLabel="Batal"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
 
       {/* Header */}
       <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -250,9 +293,18 @@ export const StaffManager: React.FC = () => {
 
       {/* Edit / Add Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-elevated border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-navy/70 backdrop-blur-xs overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false);
+          }}
+        >
+          <div 
+            className="relative bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-elevated border border-slate-200 overflow-hidden my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Pinned Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 p-5 sm:p-6 pb-4 shrink-0 bg-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-azure-soft text-navy flex items-center justify-center">
                   <UsersThree size={20} weight="duotone" />
@@ -265,14 +317,17 @@ export const StaffManager: React.FC = () => {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-ink hover:bg-slate-100"
+                className="p-2 rounded-xl text-slate-400 hover:text-ink hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+                aria-label="Tutup Modal"
               >
-                <X size={18} />
+                <X size={20} weight="bold" />
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={handleSave} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 overscroll-contain">
               <div>
                 <label className="block text-xs font-bold text-ink mb-1">
                   Nama Lengkap beserta Gelar <span className="text-rose-500">*</span>
@@ -341,28 +396,29 @@ export const StaffManager: React.FC = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-ink mb-1">URL Foto Profil</label>
-                <input
-                  type="url"
-                  value={photo}
-                  onChange={(e) => setPhoto(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-ink"
-                />
+              <ImageUploadField
+                label="Foto Profil GTK"
+                value={photo}
+                onChange={setPhoto}
+                recommendedDimensions="600 x 600 px"
+                aspectRatioHint="1:1 Square"
+                helperText="Format pas foto formal guru atau staf berlatar belakang rapi."
+              />
+
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              {/* Pinned Footer */}
+              <div className="p-4 sm:p-5 flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/70 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-ink-muted hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-ink-muted hover:bg-slate-200/60 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm"
+                  className="px-5 py-2.5 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                 >
                   Simpan Data GTK
                 </button>

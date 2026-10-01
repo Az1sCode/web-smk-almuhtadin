@@ -7,16 +7,18 @@ import {
   CheckCircle,
   Funnel
 } from '@phosphor-icons/react';
-import { achievementsData } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const AchievementsPage: React.FC = () => {
+  const { achievements } = useSchoolData();
   const [selectedLevel, setSelectedLevel] = useState<string>('Semua');
   const [selectedYear, setSelectedYear] = useState<string>('Semua');
 
   const levels = ['Semua', 'Nasional', 'Provinsi', 'Kota'];
   const years = ['Semua', '2026', '2025', '2024'];
 
-  const filteredAchievements = achievementsData.filter((item) => {
+  const filteredAchievements = achievements.filter((item) => {
     const matchesLevel =
       selectedLevel === 'Semua' || item.level.toLowerCase() === selectedLevel.toLowerCase();
     const matchesYear =
@@ -160,9 +162,23 @@ export const AchievementsPage: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8">
-          <p className="text-ink-muted text-base">Tidak ada data prestasi yang cocok dengan filter yang dipilih.</p>
-        </div>
+        <EmptyState
+          title="Belum Ada Data Prestasi"
+          description={
+            selectedLevel !== 'Semua' || selectedYear !== 'Semua'
+              ? 'Tidak ada data prestasi yang cocok dengan tingkat atau tahun yang dipilih.'
+              : 'Daftar rekam jejak prestasi dan penghargaan civitas belum ditambahkan.'
+          }
+          actionLabel={selectedLevel !== 'Semua' || selectedYear !== 'Semua' ? 'Reset Filter' : undefined}
+          onAction={
+            selectedLevel !== 'Semua' || selectedYear !== 'Semua'
+              ? () => {
+                  setSelectedLevel('Semua');
+                  setSelectedYear('Semua');
+                }
+              : undefined
+          }
+        />
       )}
     </div>
   );

@@ -3,6 +3,7 @@ export interface Major {
   name: string;
   abbreviation: string;
   slug: string;
+  logo?: string;
   shortDescription: string;
   fullDescription: string;
   competencies: string[];
@@ -100,6 +101,7 @@ export interface NewsItem {
   publishedAt: string;
   readingTime: string;
   isPinned?: boolean;
+  status?: 'published' | 'draft';
   viewsCount: number;
 }
 
@@ -110,6 +112,7 @@ export interface HeroSlide {
   description: string;
   image: string;
   imageAlt?: string;
+  isActive?: boolean;
 }
 
 export interface SchoolAdvantage {

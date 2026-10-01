@@ -6,9 +6,11 @@ import {
   UsersThree, 
   Sparkle 
 } from '@phosphor-icons/react';
-import { staffData } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const StaffPage: React.FC = () => {
+  const { staff } = useSchoolData();
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
 
   const categories = [
@@ -19,7 +21,7 @@ export const StaffPage: React.FC = () => {
     { label: 'Staf Tata Usaha', value: 'staf-tu' },
   ];
 
-  const filteredStaff = staffData.filter((member) => {
+  const filteredStaff = staff.filter((member) => {
     if (selectedCategory === 'Semua') return true;
     return member.category === selectedCategory;
   });
@@ -58,60 +60,73 @@ export const StaffPage: React.FC = () => {
       </div>
 
       {/* Staff Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredStaff.map((member) => (
-          <div
-            key={member.id}
-            className="group bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper hover:shadow-elevated transition-all flex flex-col justify-between hover:-translate-y-1 duration-300"
-          >
-            <div>
-              {/* Formal Portrait Container */}
-              <div className="relative aspect-[3/4] overflow-hidden bg-slate-100">
-                <img
-                  src={member.photo}
-                  alt={member.name}
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
-                />
-                {member.department && (
-                  <div className="absolute bottom-3 left-3 right-3">
-                    <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white font-mono text-[11px] font-medium block truncate text-center">
-                      {member.department}
-                    </span>
-                  </div>
-                )}
-              </div>
+      {filteredStaff.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredStaff.map((member) => (
+            <div
+              key={member.id}
+              className="group bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper hover:shadow-elevated transition-all flex flex-col justify-between hover:-translate-y-1 duration-300"
+            >
+              <div>
+                {/* Formal Portrait Container */}
+                <div className="relative aspect-[3/4] overflow-hidden bg-slate-100">
+                  <img
+                    src={member.photo}
+                    alt={member.name}
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {/* {member.department && (
+                    <div className="absolute bottom-3 left-3 right-3">
+                      <span className="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-white font-mono text-[11px] font-medium block truncate text-center">
+                        {member.department}
+                      </span>
+                    </div>
+                  )} */}
+                </div>
 
-              {/* Information */}
-              <div className="p-5 space-y-1.5">
-                <h3 className="font-extrabold text-sm sm:text-base text-ink group-hover:text-navy transition-colors line-clamp-1">
-                  {member.name}
-                </h3>
-                <p className="text-xs text-ink-muted leading-relaxed font-medium line-clamp-2">
-                  {member.position}
-                </p>
-                {member.nipNuptk && (
-                  <p className="text-[11px] font-mono text-ink-subtle pt-1">
-                    NIP: {member.nipNuptk}
+                {/* Information */}
+                <div className="p-5 space-y-1.5">
+                  <h3 className="font-extrabold text-sm sm:text-base text-ink group-hover:text-navy transition-colors line-clamp-1">
+                    {member.name}
+                  </h3>
+                  <p className="text-xs text-ink-muted leading-relaxed font-medium line-clamp-2">
+                    {member.position}
                   </p>
-                )}
+                  {member.nipNuptk && (
+                    <p className="text-[11px] font-mono text-ink-subtle pt-1">
+                      NIP: {member.nipNuptk}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Contact row (if available) */}
-            {member.email && (
-              <div className="px-5 pb-5 pt-2 border-t border-slate-100">
-                <a
-                  href={`mailto:${member.email}`}
-                  className="inline-flex items-center gap-1.5 text-xs text-navy hover:text-azure transition-colors font-mono"
-                >
-                  <EnvelopeSimple size={14} />
-                  <span className="truncate">{member.email}</span>
-                </a>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+              {/* Contact row (if available) */}
+              {/* {member.email && (
+                <div className="px-5 pb-5 pt-2 border-t border-slate-100">
+                  <a
+                    href={`mailto:${member.email}`}
+                    className="inline-flex items-center gap-1.5 text-xs text-navy hover:text-azure transition-colors font-mono"
+                  >
+                    <EnvelopeSimple size={14} />
+                    <span className="truncate">{member.email}</span>
+                  </a>
+                </div>
+              )} */}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title="Belum Ada Data GTK"
+          description={
+            selectedCategory !== 'Semua'
+              ? 'Tidak ada data pendidik atau tenaga kependidikan dalam kategori yang dipilih.'
+              : 'Data direktori guru dan tenaga kependidikan belum ditambahkan ke sistem.'
+          }
+          actionLabel={selectedCategory !== 'Semua' ? 'Tampilkan Semua Kategori' : undefined}
+          onAction={selectedCategory !== 'Semua' ? () => setSelectedCategory('Semua') : undefined}
+        />
+      )}
     </div>
   );
 };

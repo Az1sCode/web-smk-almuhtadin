@@ -9,17 +9,22 @@ import {
   CaretLeft,
   CaretRight
 } from '@phosphor-icons/react';
-import { newsData } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
 import { formatIndonesianDate } from '../utils/formatters';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const NewsPage: React.FC = () => {
+  const { news } = useSchoolData();
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   const categories = ['Semua', 'Pengumuman', 'Kegiatan', 'Prestasi', 'Artikel'];
 
-  const filteredNews = newsData.filter((item) => {
+  // Only display published news in public portal
+  const publishedNews = news.filter((item) => item.status !== 'draft');
+
+  const filteredNews = publishedNews.filter((item) => {
     const matchesCategory =
       selectedCategory === 'Semua' || item.category.toLowerCase() === selectedCategory.toLowerCase();
     const matchesSearch =
@@ -202,9 +207,23 @@ export const NewsPage: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8">
-          <p className="text-ink-muted text-base">Tidak ada berita atau pengumuman yang sesuai dengan pencarian Anda.</p>
-        </div>
+        <EmptyState
+          title="Tidak Ada Berita Ditemukan"
+          description={
+            searchQuery || selectedCategory !== 'Semua'
+              ? 'Tidak ada berita atau pengumuman yang sesuai dengan filter atau kata kunci pencarian Anda.'
+              : 'Belum ada berita atau artikel yang dipublikasikan saat ini.'
+          }
+          actionLabel={searchQuery || selectedCategory !== 'Semua' ? 'Reset Pencarian & Filter' : undefined}
+          onAction={
+            searchQuery || selectedCategory !== 'Semua'
+              ? () => {
+                  setSearchQuery('');
+                  setSelectedCategory('Semua');
+                }
+              : undefined
+          }
+        />
       )}
     </div>
   );

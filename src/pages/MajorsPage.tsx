@@ -5,12 +5,15 @@ import {
   CheckCircle, 
   Users, 
   ChalkboardTeacher, 
-  Buildings 
+  Buildings,
+  GraduationCap
 } from '@phosphor-icons/react';
-import { majorsData, schoolMetadata } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
 import { getMajorIcon } from '../utils/majorIcons';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const MajorsPage: React.FC = () => {
+  const { majors, settings } = useSchoolData();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 space-y-16">
@@ -23,13 +26,20 @@ export const MajorsPage: React.FC = () => {
           Program Keahlian Unggulan
         </h1>
         <p className="text-sm sm:text-base text-ink-muted leading-relaxed">
-          Empat program keahlian vokasi masa depan yang terintegrasi dengan kebutuhan industri riil, didukung laboratorium berteknologi tinggi dan sertifikasi profesi.
+          Program keahlian vokasi masa depan yang terintegrasi dengan kebutuhan industri riil, didukung laboratorium berteknologi tinggi dan sertifikasi profesi.
         </p>
       </div>
 
       {/* Majors Deep Dive List */}
-      <div className="space-y-12">
-        {majorsData.map((major) => (
+      {majors.length === 0 ? (
+        <EmptyState
+          title="Belum Ada Program Keahlian"
+          message="Data program keahlian belum ditambahkan oleh administrator."
+          icon={<GraduationCap size={32} weight="duotone" className="text-azure" />}
+        />
+      ) : (
+        <div className="space-y-12">
+          {majors.map((major) => (
           <div
             key={major.id}
             id={major.slug}
@@ -46,9 +56,16 @@ export const MajorsPage: React.FC = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/30 to-transparent lg:hidden" />
                 
                 <div className="absolute bottom-6 left-6 right-6 text-white space-y-2 lg:hidden">
-                  <span className="px-3 py-1 rounded-full bg-gold text-slate-950 font-bold text-xs font-mono">
-                    {major.abbreviation}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {major.logo && (
+                      <div className="w-8 h-8 rounded-lg bg-white/95 p-1 flex items-center justify-center shrink-0">
+                        <img src={major.logo} alt={major.name} className="w-full h-full object-contain" />
+                      </div>
+                    )}
+                    <span className="px-3 py-1 rounded-full bg-gold text-slate-950 font-bold text-xs font-mono">
+                      {major.abbreviation}
+                    </span>
+                  </div>
                   <h3 className="text-xl font-bold">{major.name}</h3>
                 </div>
               </div>
@@ -58,8 +75,12 @@ export const MajorsPage: React.FC = () => {
                 <div className="space-y-6">
                   <div className="hidden lg:flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-azure-soft flex items-center justify-center">
-                        {getMajorIcon(major.abbreviation)}
+                      <div className="w-12 h-12 rounded-2xl bg-azure-soft flex items-center justify-center overflow-hidden border border-slate-100 shrink-0">
+                        {major.logo ? (
+                          <img src={major.logo} alt={major.name} className="w-full h-full object-contain p-1" />
+                        ) : (
+                          getMajorIcon(major.abbreviation)
+                        )}
                       </div>
                       <div>
                         <span className="text-xs font-mono font-bold text-azure uppercase tracking-wider">
@@ -140,6 +161,7 @@ export const MajorsPage: React.FC = () => {
           </div>
         ))}
       </div>
+      )}
 
       {/* PPDB Callout Banner */}
       <div className="bg-gradient-to-r from-navy to-navy-dark rounded-3xl p-8 sm:p-12 text-white shadow-elevated flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -152,7 +174,7 @@ export const MajorsPage: React.FC = () => {
           </p>
         </div>
         <a
-          href={schoolMetadata.whatsappUrl}
+          href={settings?.whatsappUrl || 'https://wa.me/6281234567890'}
           target="_blank"
           rel="noreferrer"
           className="px-6 py-3.5 rounded-full bg-gold hover:bg-gold-hover text-slate-950 font-bold text-xs sm:text-sm whitespace-nowrap shadow transition-all transform hover:-translate-y-0.5 active:scale-95"

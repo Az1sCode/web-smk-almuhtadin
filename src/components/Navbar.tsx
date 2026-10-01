@@ -12,9 +12,10 @@ import {
   UsersThree,
   Target
 } from '@phosphor-icons/react';
-import { schoolMetadata } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
 
 export const Navbar: React.FC = () => {
+  const { settings } = useSchoolData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [mobileProfileOpen, setMobileProfileOpen] = useState(true);
@@ -234,7 +235,7 @@ export const Navbar: React.FC = () => {
           {/* Right Action: PPDB & Mobile Toggle */}
           <div className="flex items-center gap-3">
             <a
-              href={schoolMetadata.whatsappUrl}
+              href={settings.whatsappUrl || 'https://wa.me/6281234567890'}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gold hover:bg-gold-hover text-slate-950 font-bold text-xs md:text-sm tracking-tight shadow-sm hover:shadow transition-all transform hover:-translate-y-0.5 active:scale-95"
@@ -350,7 +351,7 @@ export const Navbar: React.FC = () => {
 
           <div className="pt-3">
             <a
-              href={schoolMetadata.whatsappUrl}
+              href={settings.whatsappUrl || 'https://wa.me/6281234567890'}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gold text-slate-950 font-bold text-sm shadow"

@@ -9,9 +9,10 @@ import {
   ArrowUpRight,
   Buildings 
 } from '@phosphor-icons/react';
-import { schoolMetadata } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
 
 export const ProfilePage: React.FC = () => {
+  const { settings } = useSchoolData();
   const milestones = [
     { year: 1998, title: 'Pendirian Sekolah', desc: 'SMK Al-Muhtadin didirikan sebagai wujud dedikasi terhadap pengembangan kejuruan berbasis teknologi dan nilai islami di Kota Depok.' },
     { year: 2008, title: 'Akreditasi A & Perluasan Lab', desc: 'Meraih predikat Akreditasi A untuk seluruh jurusan dan membangun fasilitas laboratorium komputer multimedia mutakhir.' },
@@ -49,7 +50,7 @@ export const ProfilePage: React.FC = () => {
           </div>
           <div>
             <span className="text-xs font-mono text-ink-muted block">NPSN Resmi</span>
-            <span className="text-base font-extrabold font-mono text-ink">{schoolMetadata.npsn}</span>
+            <span className="text-base font-extrabold font-mono text-ink">{settings?.npsn || '20231412'}</span>
           </div>
         </div>
 
@@ -59,7 +60,7 @@ export const ProfilePage: React.FC = () => {
           </div>
           <div>
             <span className="text-xs font-mono text-ink-muted block">Status Akreditasi</span>
-            <span className="text-base font-extrabold font-mono text-ink">{schoolMetadata.accreditation}</span>
+            <span className="text-base font-extrabold font-mono text-ink">{settings?.accreditation || 'Terakreditasi A (Unggul)'}</span>
           </div>
         </div>
 
@@ -69,7 +70,7 @@ export const ProfilePage: React.FC = () => {
           </div>
           <div>
             <span className="text-xs font-mono text-ink-muted block">Tahun Berdiri</span>
-            <span className="text-base font-extrabold font-mono text-ink">Tahun {schoolMetadata.foundedYear}</span>
+            <span className="text-base font-extrabold font-mono text-ink">Tahun {settings?.foundedYear || 1998}</span>
           </div>
         </div>
 
@@ -90,17 +91,17 @@ export const ProfilePage: React.FC = () => {
           <div className="lg:col-span-4 flex flex-col items-center text-center space-y-3">
             <div className="relative rounded-2xl overflow-hidden aspect-[3/4] w-full max-w-xs shadow-md border border-slate-200">
               <img
-                src={schoolMetadata.principal.photo}
-                alt={schoolMetadata.principal.name}
+                src={settings?.principal?.photo || 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=400'}
+                alt={settings?.principal?.name || 'Kepala Sekolah SMK Al-Muhtadin'}
                 className="w-full h-full object-cover"
               />
             </div>
             <div className="pt-2">
               <h3 className="font-extrabold text-base sm:text-lg text-ink">
-                {schoolMetadata.principal.name}
+                {settings?.principal?.name || 'H. Ahmad Fauzi, M.Pd.'}
               </h3>
               <p className="text-xs text-ink-muted font-mono">
-                {schoolMetadata.principal.title}
+                {settings?.principal?.title || 'Kepala Sekolah SMK Al-Muhtadin'}
               </p>
             </div>
           </div>
@@ -128,7 +129,7 @@ export const ProfilePage: React.FC = () => {
             <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-wider text-ink-muted">Tanda Tangan Digital Resmi</p>
-                <p className="font-bold text-ink text-sm">{schoolMetadata.principal.name}</p>
+                <p className="font-bold text-ink text-sm">{settings?.principal?.name || 'H. Ahmad Fauzi, M.Pd.'}</p>
                 <p className="text-2xs font-mono text-ink-muted">NIP. 196803151993031004</p>
               </div>
               <div className="px-3 py-1.5 border border-emerald-200 rounded-xl bg-emerald-50/50 flex items-center gap-2 self-start sm:self-auto">

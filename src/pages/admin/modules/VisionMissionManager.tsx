@@ -49,7 +49,7 @@ export const VisionMissionManager: React.FC = () => {
 
   const handleDeleteMission = (index: number) => {
     if (data.missions.length <= 1) {
-      alert('Minimal harus ada 1 butir misi.');
+      showToast('Minimal harus ada 1 butir misi.');
       return;
     }
     const updated = data.missions.filter((_, idx) => idx !== index);

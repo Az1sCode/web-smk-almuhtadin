@@ -6,10 +6,12 @@ import {
   ShieldCheck, 
   LightbulbFilament 
 } from '@phosphor-icons/react';
-import { schoolVisionMissionData } from '../data/mockData';
+import { useSchoolData } from '../hooks/useSchoolData';
+import { EmptyState } from '../components/common/EmptyState';
 
 export const VisionMissionPage: React.FC = () => {
-  const { vision, visionExplanation, missions, coreValues } = schoolVisionMissionData;
+  const { visionMission } = useSchoolData();
+  const { vision, visionExplanation, missions, coreValues } = visionMission;
 
   const renderCoreValueIcon = (iconName: string) => {
     switch (iconName) {
@@ -53,12 +55,14 @@ export const VisionMissionPage: React.FC = () => {
           </div>
 
           <blockquote className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-snug">
-            "Menjadi SMK Unggul yang Menghasilkan Lulusan Berakhlak Mulia, Kompeten di Bidang Teknologi, dan Berdaya Saing Global."
+            "{vision || 'Menjadi SMK Unggul yang Menghasilkan Lulusan Berakhlak Mulia, Kompeten di Bidang Teknologi, dan Berdaya Saing Global.'}"
           </blockquote>
 
-          <p className="text-sm sm:text-base text-slate-200 leading-relaxed max-w-2xl font-light">
-            Visi ini menjadi kompas bagi seluruh tenaga pendidik dan kependidikan dalam mengarahkan potensi siswa agar siap diserap industri maupun melanjutkan studi ke jenjang yang lebih tinggi.
-          </p>
+          {visionExplanation && (
+            <p className="text-sm sm:text-base text-slate-200 leading-relaxed max-w-2xl font-light">
+              {visionExplanation}
+            </p>
+          )}
         </div>
       </div>
 
@@ -73,26 +77,33 @@ export const VisionMissionPage: React.FC = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {missions.map((mission, idx) => (
-            <div
-              key={idx}
-              className="bg-white rounded-3xl border border-slate-200/80 p-7 shadow-whisper hover:shadow-md transition-all flex flex-col justify-between space-y-4"
-            >
-              <div className="space-y-3">
-                <span className="font-mono text-3xl font-extrabold text-azure bg-azure-soft px-3 py-1 rounded-xl inline-block">
-                  {mission.number}
-                </span>
-                <h3 className="font-bold text-base sm:text-lg text-ink">
-                  {mission.title}
-                </h3>
+        {missions && missions.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {missions.map((mission, idx) => (
+              <div
+                key={idx}
+                className="bg-white rounded-3xl border border-slate-200/80 p-7 shadow-whisper hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+              >
+                <div className="space-y-3">
+                  <span className="font-mono text-3xl font-extrabold text-azure bg-azure-soft px-3 py-1 rounded-xl inline-block">
+                    {mission.number}
+                  </span>
+                  <h3 className="font-bold text-base sm:text-lg text-ink">
+                    {mission.title}
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
+                  {mission.description}
+                </p>
               </div>
-              <p className="text-xs sm:text-sm text-ink-muted leading-relaxed">
-                {mission.description}
-              </p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Belum Ada Misi"
+            message="Rencana aksi strategis dan misi sekolah belum ditambahkan."
+          />
+        )}
       </div>
 
       {/* Core Values / Motto Strip */}
@@ -106,26 +117,33 @@ export const VisionMissionPage: React.FC = () => {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {coreValues.map((val, vIdx) => (
-            <div
-              key={vIdx}
-              className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper flex flex-col justify-between space-y-4"
-            >
-              <div className="w-12 h-12 rounded-2xl bg-azure-soft flex items-center justify-center">
-                {renderCoreValueIcon(val.iconName)}
+        {coreValues && coreValues.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {coreValues.map((val, vIdx) => (
+              <div
+                key={vIdx}
+                className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper flex flex-col justify-between space-y-4"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-azure-soft flex items-center justify-center">
+                  {renderCoreValueIcon(val.iconName)}
+                </div>
+                <div>
+                  <h3 className="font-bold text-base text-ink mb-1.5">
+                    {val.title}
+                  </h3>
+                  <p className="text-xs text-ink-muted leading-relaxed">
+                    {val.desc}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-base text-ink mb-1.5">
-                  {val.title}
-                </h3>
-                <p className="text-xs text-ink-muted leading-relaxed">
-                  {val.desc}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <EmptyState
+            title="Belum Ada Nilai Inti"
+            message="Nilai-nilai inti institusi belum dikonfigurasi."
+          />
+        )}
       </div>
     </div>
   );

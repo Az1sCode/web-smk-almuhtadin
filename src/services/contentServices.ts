@@ -31,7 +31,8 @@ import {
 function getStorage<T>(key: string, fallback: T): T {
   try {
     const item = localStorage.getItem(key);
-    return item ? JSON.parse(item) : fallback;
+    if (item === null) return fallback;
+    return JSON.parse(item);
   } catch {
     return fallback;
   }
@@ -40,6 +41,9 @@ function getStorage<T>(key: string, fallback: T): T {
 function setStorage<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cms_data_updated', { detail: { key } }));
+    }
   } catch (err) {
     console.error(`Failed to save ${key} to localStorage:`, err);
   }
@@ -150,7 +154,7 @@ export const contentServices = {
     setStorage('cms_advantages', list.filter((a) => a.id !== id));
   },
 
-  // --- 4. MAJORS (4 JURUSAN) ---
+  // --- 4. MAJORS (JURUSAN) ---
   getMajors: (): Major[] => {
     return getStorage<Major[]>('cms_majors', majorsData);
   },
@@ -158,6 +162,30 @@ export const contentServices = {
     const list = contentServices.getMajors();
     const updated = list.map((m) => (m.id === major.id ? major : m));
     setStorage('cms_majors', updated);
+  },
+  saveMajor: (major: Omit<Major, 'id'> & { id?: number }): Major => {
+    const list = contentServices.getMajors();
+    if (major.id && list.some((m) => m.id === major.id)) {
+      const updated = list.map((m) => (m.id === major.id ? (major as Major) : m));
+      setStorage('cms_majors', updated);
+      return major as Major;
+    } else {
+      const newId = major.id || Date.now();
+      const newMajor: Major = {
+        ...major,
+        id: Number(newId),
+        slug: major.slug || major.abbreviation.toLowerCase().replace(/[^a-z0-9]/g, '-'),
+        fullDescription: major.fullDescription || major.shortDescription,
+        featuredImage: major.featuredImage || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=1200',
+        industryPartners: major.industryPartners || []
+      };
+      setStorage('cms_majors', [...list, newMajor]);
+      return newMajor;
+    }
+  },
+  deleteMajor: (id: number): void => {
+    const list = contentServices.getMajors();
+    setStorage('cms_majors', list.filter((m) => m.id !== id));
   },
 
   // --- 5. NEWS & ANNOUNCEMENTS ---
@@ -278,6 +306,10 @@ export const contentServices = {
       return newItem;
     }
   },
+  deleteAlbum: (id: number): void => {
+    const list = contentServices.getAlbums();
+    setStorage('cms_albums', list.filter((a) => a.id !== id));
+  },
   saveGalleryImage: (img: Omit<GalleryImage, 'id'> & { id?: number }): GalleryImage => {
     const list = contentServices.getGalleryImages();
     if (img.id) {
@@ -328,5 +360,43 @@ export const contentServices = {
   deleteAdminUser: (id: number): void => {
     const list = contentServices.getAdminUsers();
     setStorage('cms_admin_users', list.filter((u) => u.id !== id));
+  },
+
+  // --- 12. RESET TO DEFAULTS ---
+  resetToDefaultData: (): void => {
+    const keys = [
+      'cms_hero_slides',
+      'cms_vision_mission',
+      'cms_advantages',
+      'cms_majors',
+      'cms_news',
+      'cms_staff',
+      'cms_achievements',
+      'cms_videos',
+      'cms_albums',
+      'cms_gallery_images',
+      'cms_school_settings',
+      'cms_admin_users'
+    ];
+    keys.forEach((k) => localStorage.removeItem(k));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cms_data_updated', { detail: { key: 'all' } }));
+    }
+  },
+
+  // --- 13. CLEAR DUMMY DATA ---
+  clearDummyData: (): void => {
+    const emptyKeys = [
+      'cms_hero_slides',
+      'cms_news',
+      'cms_achievements',
+      'cms_videos',
+      'cms_albums',
+      'cms_gallery_images'
+    ];
+    emptyKeys.forEach((k) => localStorage.setItem(k, JSON.stringify([])));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('cms_data_updated', { detail: { key: 'all' } }));
+    }
   }
 };

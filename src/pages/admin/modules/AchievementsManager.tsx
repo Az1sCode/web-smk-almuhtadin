@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Trash, 
@@ -6,11 +6,13 @@ import {
   Trophy, 
   X, 
   Check, 
-  Star,
-  MagnifyingGlass
+  MagnifyingGlass 
 } from '@phosphor-icons/react';
 import { Achievement } from '../../../types';
 import { contentServices } from '../../../services/contentServices';
+import { ImageUploadField } from '../../../components/admin/ImageUploadField';
+import { ConfirmDialog } from '../../../components/admin/ConfirmDialog';
+import { EmptyState } from '../../../components/common/EmptyState';
 
 export const AchievementsManager: React.FC = () => {
   const [achievements, setAchievements] = useState<Achievement[]>(() => contentServices.getAchievements());
@@ -19,6 +21,7 @@ export const AchievementsManager: React.FC = () => {
   const [editingItem, setEditingItem] = useState<Achievement | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [notification, setNotification] = useState('');
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
 
   // Form states
   const [title, setTitle] = useState('');
@@ -30,7 +33,28 @@ export const AchievementsManager: React.FC = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [photo, setPhoto] = useState('');
   const [description, setDescription] = useState('');
-  const [isFeatured, setIsFeatured] = useState(false);
+
+  // Prevent background scroll when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [isModalOpen]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isModalOpen) {
+        setIsModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
 
   const levels = [
     { label: 'Semua Tingkat', value: 'all' },
@@ -62,9 +86,8 @@ export const AchievementsManager: React.FC = () => {
     setLevel('nasional');
     setRankTitle('Juara 1');
     setYear(new Date().getFullYear());
-    setPhoto('https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=800');
+    setPhoto('');
     setDescription('');
-    setIsFeatured(false);
     setIsModalOpen(true);
   };
 
@@ -78,15 +101,14 @@ export const AchievementsManager: React.FC = () => {
     setRankTitle(item.rankTitle);
     setYear(item.year);
     setPhoto(item.photo);
-    setDescription(item.description);
-    setIsFeatured(!!item.isFeatured);
+    setDescription(item.description || '');
     setIsModalOpen(true);
   };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !recipientName.trim()) {
-      alert('Nama prestasi dan nama peraih wajib diisi.');
+      showToast('Nama prestasi dan nama peraih wajib diisi.');
       return;
     }
 
@@ -101,7 +123,7 @@ export const AchievementsManager: React.FC = () => {
       year: Number(year),
       photo: photo.trim() || 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=800',
       description,
-      isFeatured
+      isFeatured: false
     });
 
     setAchievements(contentServices.getAchievements());
@@ -109,10 +131,11 @@ export const AchievementsManager: React.FC = () => {
     showToast(editingItem ? 'Prestasi berhasil diperbarui!' : 'Prestasi baru berhasil dicatat!');
   };
 
-  const handleDelete = (id: number) => {
-    if (window.confirm('Hapus catatan prestasi ini?')) {
-      contentServices.deleteAchievement(id);
+  const handleConfirmDelete = () => {
+    if (deleteTargetId !== null) {
+      contentServices.deleteAchievement(deleteTargetId);
       setAchievements(contentServices.getAchievements());
+      setDeleteTargetId(null);
       showToast('Data prestasi telah dihapus.');
     }
   };
@@ -127,26 +150,38 @@ export const AchievementsManager: React.FC = () => {
         </div>
       )}
 
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteTargetId !== null}
+        title="Hapus Catatan Prestasi?"
+        message="Tindakan ini akan menghapus data prestasi dari daftar publik secara permanen."
+        confirmLabel="Ya, Hapus"
+        cancelLabel="Batal"
+        variant="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTargetId(null)}
+      />
+
       {/* Header */}
       <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-whisper flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-lg font-bold text-ink">Rekam Prestasi Sekolah & Siswa</h2>
+            <h2 className="text-lg font-bold text-ink">Prestasi Civitas Sekolah</h2>
             <span className="px-2.5 py-0.5 rounded-full bg-gold/15 text-gold-hover font-mono text-[10px] font-bold">
-              {achievements.length} Medali & Kejuaraan
+              {achievements.length} Terdaftar
             </span>
           </div>
-          <p className="text-xs text-ink-muted mt-1 leading-relaxed">
-            Daftar perolehan kejuaraan LKS, olimpiade vokasi, dan kejuaraan ekstrakurikuler.
+          <p className="text-xs text-ink-muted mt-1">
+            Data kejuaraan siswa dan guru yang otomatis disortir terbaru untuk tampil di beranda dan halaman publik.
           </p>
         </div>
 
         <button
           onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm shrink-0 cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-navy text-white text-xs font-bold shadow-md hover:bg-navy-light transition-all active:scale-95 shrink-0"
         >
           <Plus size={16} weight="bold" />
-          <span>Tambah Prestasi Baru</span>
+          Catat Prestasi Baru
         </button>
       </div>
 
@@ -184,87 +219,94 @@ export const AchievementsManager: React.FC = () => {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 text-slate-600 font-mono uppercase text-[11px] border-b border-slate-200">
-              <tr>
-                <th className="p-3.5">Prestasi & Kompetisi</th>
-                <th className="p-3.5">Penerima</th>
-                <th className="p-3.5">Tingkat</th>
-                <th className="p-3.5">Tahun</th>
-                <th className="p-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {filteredItems.map((item) => (
-                <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
-                  <td className="p-3.5">
-                    <div className="flex items-center gap-3">
-                      <img
-                        src={item.photo}
-                        alt={item.title}
-                        className="w-12 h-10 rounded-lg object-cover shrink-0 border border-slate-200"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=400';
-                        }}
-                      />
-                      <div className="min-w-0 max-w-xs sm:max-w-md">
-                        <div className="flex items-center gap-1.5">
-                          {item.isFeatured && (
-                            <Star size={13} weight="fill" className="text-gold shrink-0" />
-                          )}
-                          <p className="font-bold text-ink truncate">{item.title}</p>
-                        </div>
-                        <p className="text-[11px] text-ink-muted line-clamp-1 mt-0.5">{item.competitionName}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="p-3.5 font-medium text-ink">{item.recipientName}</td>
-                  <td className="p-3.5">
-                    <span className="px-2.5 py-0.5 rounded-full bg-gold/15 text-gold-hover font-mono text-[10px] font-bold uppercase">
-                      {item.level}
-                    </span>
-                  </td>
-                  <td className="p-3.5 font-mono text-ink-muted">{item.year}</td>
-                  <td className="p-3.5 text-right">
-                    <div className="inline-flex items-center gap-1">
-                      <button
-                        onClick={() => handleOpenEdit(item)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-navy hover:bg-slate-100 transition-colors"
-                        title="Edit Prestasi"
-                      >
-                        <PencilSimple size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                        title="Hapus Prestasi"
-                      >
-                        <Trash size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filteredItems.length === 0 && (
+      {/* Table / Empty State */}
+      {filteredItems.length === 0 ? (
+        <EmptyState
+          title="Tidak Ada Prestasi Ditemukan"
+          message={achievements.length === 0 ? 'Belum ada data prestasi yang dicatat. Tambahkan prestasi baru melalui tombol di atas.' : 'Tidak ada prestasi yang cocok dengan pencarian atau filter yang dipilih.'}
+          icon={<Trophy size={32} weight="duotone" className="text-gold" />}
+          actionLabel={achievements.length === 0 ? 'Catat Prestasi Baru' : undefined}
+          onActionClick={achievements.length === 0 ? handleOpenAdd : undefined}
+        />
+      ) : (
+        <div className="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-whisper">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 text-slate-600 font-mono uppercase text-[11px] border-b border-slate-200">
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-ink-muted">
-                    Tidak ada catatan prestasi ditemukan.
-                  </td>
+                  <th className="p-3.5">Prestasi & Kompetisi</th>
+                  <th className="p-3.5">Penerima</th>
+                  <th className="p-3.5">Tingkat</th>
+                  <th className="p-3.5">Tahun</th>
+                  <th className="p-3.5 text-right">Aksi</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredItems.map((item) => (
+                  <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="p-3.5">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={item.photo}
+                          alt={item.title}
+                          className="w-12 h-10 rounded-lg object-cover shrink-0 border border-slate-200"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&q=80&w=400';
+                          }}
+                        />
+                        <div className="min-w-0 max-w-xs sm:max-w-md">
+                          <p className="font-bold text-ink truncate">{item.title}</p>
+                          <p className="text-[11px] text-ink-muted line-clamp-1 mt-0.5">{item.competitionName}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-3.5 font-medium text-ink">{item.recipientName}</td>
+                    <td className="p-3.5">
+                      <span className="px-2.5 py-0.5 rounded-full bg-gold/15 text-gold-hover font-mono text-[10px] font-bold uppercase">
+                        {item.level}
+                      </span>
+                    </td>
+                    <td className="p-3.5 font-mono text-ink-muted">{item.year}</td>
+                    <td className="p-3.5 text-right">
+                      <div className="inline-flex items-center gap-1">
+                        <button
+                          onClick={() => handleOpenEdit(item)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-navy hover:bg-slate-100 transition-colors"
+                          title="Edit Prestasi"
+                        >
+                          <PencilSimple size={16} />
+                        </button>
+                        <button
+                          onClick={() => setDeleteTargetId(item.id)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                          title="Hapus Prestasi"
+                        >
+                          <Trash size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Edit / Add Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy/60 backdrop-blur-xs">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-elevated border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-navy/70 backdrop-blur-xs overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false);
+          }}
+        >
+          <div 
+            className="relative bg-white rounded-3xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-elevated border border-slate-200 overflow-hidden my-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Pinned Header */}
+            <div className="flex items-center justify-between border-b border-slate-100 p-5 sm:p-6 pb-4 shrink-0 bg-white">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gold/15 text-gold-hover flex items-center justify-center">
                   <Trophy size={20} weight="duotone" />
@@ -277,14 +319,17 @@ export const AchievementsManager: React.FC = () => {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-ink hover:bg-slate-100"
+                className="p-2 rounded-xl text-slate-400 hover:text-ink hover:bg-slate-100 transition-colors shrink-0 cursor-pointer"
+                aria-label="Tutup Modal"
               >
-                <X size={18} />
+                <X size={20} weight="bold" />
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="space-y-4">
+            <form onSubmit={handleSave} className="flex flex-col flex-1 overflow-hidden min-h-0">
+              <div className="p-5 sm:p-6 space-y-4 overflow-y-auto flex-1 overscroll-contain">
               <div>
                 <label className="block text-xs font-bold text-ink mb-1">
                   Nama Prestasi / Gelar <span className="text-rose-500">*</span>
@@ -380,27 +425,39 @@ export const AchievementsManager: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-ink mb-1">URL Foto Dokumentasi</label>
-                <input
-                  type="url"
-                  value={photo}
-                  onChange={(e) => setPhoto(e.target.value)}
-                  placeholder="https://images.unsplash.com/..."
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-mono text-ink"
+                <label className="block text-xs font-bold text-ink mb-1">Deskripsi Singkat / Catatan Prestasi</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                  placeholder="Ceritakan tentang pencapaian prestasi, jumlah peserta saingan, atau dampak kemenangan..."
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs text-ink focus:outline-none focus:ring-2 focus:ring-azure/20 focus:border-azure"
                 />
               </div>
 
-              <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              <ImageUploadField
+                label="Foto Dokumentasi Prestasi"
+                value={photo}
+                onChange={setPhoto}
+                recommendedDimensions="800 x 600 px (4:3)"
+                aspectRatioHint="4:3 Landscape"
+                helperText="Unggah foto piala, piagam penghargaan, atau foto dokumentasi saat penyerahan gelar."
+              />
+
+              </div>
+
+              {/* Pinned Footer */}
+              <div className="p-4 sm:p-5 flex items-center justify-end gap-3 border-t border-slate-100 bg-slate-50/70 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-ink-muted hover:bg-slate-100 transition-colors"
+                  className="px-4 py-2.5 rounded-xl text-xs font-bold text-ink-muted hover:bg-slate-200/60 transition-colors cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm"
+                  className="px-5 py-2.5 rounded-xl bg-navy hover:bg-navy-light text-white text-xs font-bold transition-all shadow-sm cursor-pointer"
                 >
                   Simpan Prestasi
                 </button>
